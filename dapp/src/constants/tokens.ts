@@ -17,6 +17,6 @@ export const tokens = [
   },
   {
     name: "EURe",
-    address: "0xcB444e90D8198415266c6a2724b7900fb12FC56E",
-    }
+    address: "0xcb444e90d8198415266c6a2724b7900fb12fc56e",
+  },
 ];
