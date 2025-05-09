@@ -8,14 +8,6 @@ import NumberBlock from "@/components/NumberBlock";
 import Banner from "@/components/Banner";
 import WithdrawBox from "@/components/WithdrawBox";
 import { ConnectKitButton } from "connectkit";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import CarouselTokens from "@/components/CarouselTokens";
 
 /**
