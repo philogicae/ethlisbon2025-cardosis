@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -13,9 +13,9 @@ import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 
 export function BankSettings({ className }: { className?: string }) {
-  const [strict, setStrict] = useState(true);
-  const [functional, setFunctional] = useState(false);
-  const [performance, setPerformance] = useState(false);
+  // const [strict, setStrict] = useState(true);
+  // const [functional, setFunctional] = useState(false);
+  // const [performance, setPerformance] = useState(false);
 
   return (
     <Card className={cn("bg-card flex flex-col items-center", className)}>

@@ -20,10 +20,8 @@ export const MovingBorder = ({
   duration?: number;
   rx?: string;
   ry?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pathRef = useRef<any>(null);
   const progress = useMotionValue<number>(0);
 
