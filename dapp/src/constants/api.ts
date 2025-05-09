@@ -1,0 +1,1 @@
+export const baseUrl="https://api.geckoterminal.com/api/v2"

@@ -44,6 +44,12 @@ dependencies:
   connectkit:
     specifier: ^1.9.0
     version: 1.9.0(@babel/core@7.27.1)(@tanstack/react-query@5.75.7)(react-dom@19.1.0)(react-is@18.3.1)(react@19.1.0)(viem@2.29.1)(wagmi@2.15.2)
+  embla-carousel-autoplay:
+    specifier: ^8.6.0
+    version: 8.6.0(embla-carousel@8.6.0)
+  embla-carousel-react:
+    specifier: ^8.6.0
+    version: 8.6.0(react@19.1.0)
   lucide-react:
     specifier: ^0.508.0
     version: 0.508.0(react@19.1.0)
@@ -4253,6 +4259,36 @@ packages:
 
   /electron-to-chromium@1.5.151:
     resolution: {integrity: sha512-Rl6uugut2l9sLojjS4H4SAr3A4IgACMLgpuEMPYCVcKydzfyPrn5absNRju38IhQOf/NwjJY8OGWjlteqYeBCA==}
+    dev: false
+
+  /embla-carousel-autoplay@8.6.0(embla-carousel@8.6.0):
+    resolution: {integrity: sha512-OBu5G3nwaSXkZCo1A6LTaFMZ8EpkYbwIaH+bPqdBnDGQ2fh4+NbzjXjs2SktoPNKCtflfVMc75njaDHOYXcrsA==}
+    peerDependencies:
+      embla-carousel: 8.6.0
+    dependencies:
+      embla-carousel: 8.6.0
+    dev: false
+
+  /embla-carousel-react@8.6.0(react@19.1.0):
+    resolution: {integrity: sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.1 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    dependencies:
+      embla-carousel: 8.6.0
+      embla-carousel-reactive-utils: 8.6.0(embla-carousel@8.6.0)
+      react: 19.1.0
+    dev: false
+
+  /embla-carousel-reactive-utils@8.6.0(embla-carousel@8.6.0):
+    resolution: {integrity: sha512-fMVUDUEx0/uIEDM0Mz3dHznDhfX+znCCDCeIophYb1QGVM7YThSWX+wz11zlYwWFOr74b4QLGg0hrGPJeG2s4A==}
+    peerDependencies:
+      embla-carousel: 8.6.0
+    dependencies:
+      embla-carousel: 8.6.0
+    dev: false
+
+  /embla-carousel@8.6.0:
+    resolution: {integrity: sha512-SjWyZBHJPbqxHOzckOfo8lHisEaJWmwd23XppYFYVh10bU66/Pn5tkVkbkCMZVdbUE5eTCI2nD8OyIP4Z+uwkA==}
     dev: false
 
   /emoji-regex@8.0.0:
