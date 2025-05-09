@@ -36,7 +36,7 @@ export function SavingsGoal({ className }: { className?: string }) {
           <div className="flex flex-col items-center">
             <span className="text-5xl font-bold text-white">{goal}</span>
             <span className="uppercase tracking-widest text-xs text-muted-foreground">
-              $/day
+              €/day
             </span>
           </div>
           <button

@@ -23,7 +23,7 @@ const NumberBlock = ({
     <Card className={cn(className)}>
       <CardHeader className="relative">
         <CardDescription>{description}</CardDescription>
-        <CardTitle className="text-3xl font-black">${value}</CardTitle>
+        <CardTitle className="text-3xl font-black">€{value}</CardTitle>
         <div className="absolute right-4 top-4">
           <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
             <TrendingUpIcon className="size-3" />

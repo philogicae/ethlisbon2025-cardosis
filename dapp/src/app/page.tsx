@@ -8,6 +8,15 @@ import NumberBlock from "@/components/NumberBlock";
 import Banner from "@/components/Banner";
 import WithdrawBox from "@/components/WithdrawBox";
 import { ConnectKitButton } from "connectkit";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import CarouselTokens from "@/components/CarouselTokens";
 
 /**
  *
@@ -35,24 +44,37 @@ export default function Home() {
         <Chart className="w-full" />
         <BankSettings className="min-w-[320px] max-w-[480px] h-fit" />
       </div>
-      <div className="w-full grid gap-4 grid-cols-1 md:grid-cols-3 auto-rows-auto">
+      <div className="grid grid-cols-3 grid-rows-2 gap-4 grid-rows-[auto_1fr]">
         <NumberBlock
-          className="md:col-span-1"
+          className="h-fit col-span-1"
           description="Total Saved Funds"
           value={230}
         />
         <NumberBlock
-          className="md:col-span-1"
+          className="h-fit col-span-1"
           description="Interest earned"
           value={112}
         />
-        {/* TODO card account balance */}
-        {/* TODO DCA account balance*/}
-        {/* TODO prices for some tokens CoinGecko */}
-        <Banner />
-        <RecentTransactions className="min-w-[360px] md:col-span-2" />
-        <SavingsGoal className="md:col-span-1 h-fit" />
+        <Banner className="col-span-1" />
+        <RecentTransactions className="min-w-[360px] col-span-2 row-start-2" />
+        <div className="row-start-2 col-start-3 flex flex-col gap-4">
+          <NumberBlock
+            className="h-fit"
+            description="Card account balance"
+            value={180}
+          />
+          <NumberBlock
+            className="h-fit"
+            description="DCA account balance"
+            value={394}
+          />
+          {/* className="w-full max-w-xs" */}
+          <CarouselTokens className="flex-1" />
+        </div>
+      </div>
+      <div className="flex gap-4">
         <WithdrawBox />
+        <SavingsGoal className="h-fit" />
       </div>
     </div>
   );

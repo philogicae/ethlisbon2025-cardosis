@@ -75,7 +75,7 @@ export function RecentTransactions({ className }: { className?: string }) {
                 transaction.amount > 0 ? "text-foreground" : "text-destructive"
               }`}
             >
-              {transaction.amount > 0 ? "+" : "-"}$
+              {transaction.amount > 0 ? "+" : "-"}€
               {Math.abs(transaction.amount)}
             </div>
           </div>
