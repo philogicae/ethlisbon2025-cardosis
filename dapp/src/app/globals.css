@@ -5,21 +5,21 @@
 
 @font-face {
   font-family: 'Steradian';
-  src: url('/src/assets/font/SteradianTRIAL-Th.otf') format('opentype');
+  src: url('assets/font/SteradianTRIAL-Th.otf') format('opentype');
   font-weight: 100;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Steradian';
-  src: url('/src/assets/font/SteradianTRIAL-Lt.otf') format('opentype');
+  src: url('assets/font/SteradianTRIAL-Lt.otf') format('opentype');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Steradian';
-  src: url('/src/assets/font/SteradianTRIAL-Rg.otf') format('opentype');
+  src: url('assets/font/SteradianTRIAL-Rg.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
