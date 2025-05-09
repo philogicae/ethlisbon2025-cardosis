@@ -4,7 +4,6 @@ import "./globals.css";
 import Navigation from "@/components/Navigation";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Web3Provider } from "@/providers/Web3Provider";
-import { ConnectKitButton } from "connectkit";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -32,10 +31,7 @@ export default function RootLayout({
         <Web3Provider>
           <SidebarProvider>
             <Navigation />
-            <main className="w-full">
-              <ConnectKitButton />
-              {children}
-            </main>
+            <main className="w-full">{children}</main>
           </SidebarProvider>
         </Web3Provider>
       </body>

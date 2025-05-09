@@ -7,6 +7,7 @@ import { BankSettings } from "@/components/BankSettings";
 import NumberBlock from "@/components/NumberBlock";
 import Banner from "@/components/Banner";
 import WithdrawBox from "@/components/WithdrawBox";
+import { ConnectKitButton } from "connectkit";
 
 /**
  *
@@ -23,6 +24,7 @@ import WithdrawBox from "@/components/WithdrawBox";
 export default function Home() {
   return (
     <div className="px-4 py-6 w-full flex flex-col gap-4">
+      <ConnectKitButton />
       <div className="flex flex-wrap md:flex-nowrap gap-4">
         <Chart className="w-full" />
         <BankSettings className="min-w-[320px] max-w-[480px] h-fit" />
