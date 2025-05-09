@@ -13,6 +13,7 @@ const config = createConfig(
       [sepolia.id]: http(`https://eth-sepolia.public.blastapi.io`),
       [gnosis.id]: http(`https://gnosis-mainnet.public.blastapi.io`),
     },
+    enableFamily: false,
     // Required API Keys
     walletConnectProjectId:
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
