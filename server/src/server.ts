@@ -1,5 +1,12 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
+import Database from "./db.ts";
+
+// Quick db test
+const db = new Database();
+const rows = db.getAllPeople();
+console.log(rows);
+db.close();
 
 const app = new Application();
 app.use(oakCors());
