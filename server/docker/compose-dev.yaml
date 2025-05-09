@@ -9,8 +9,12 @@ services:
     container_name: cardosis-backend
     ports:
       - 6789:8000
+    volumes:
+      - app_data:/app/data
     env_file:
       - ../.env
+    environment:
+      - DOCKER_ENV=true
     networks:
       - cardosis
 
@@ -18,3 +22,6 @@ networks:
   cardosis:
     name: cardosis
     driver: bridge
+
+volumes:
+  app_data:
