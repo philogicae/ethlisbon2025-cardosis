@@ -1,0 +1,12 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-all src/server.ts",
+    "serve": "deno run --allow-all src/server.ts",
+    "deploy-test": "bash ./scripts/deploy-test.sh",
+    "deploy": "bash ./scripts/deploy.sh",
+    "logs": "bash ./scripts/logs.sh",
+    "connect-vm": "bash ./scripts/connect-vm.sh",
+    "restart": "bash ./scripts/restart.sh"
+  },
+  "imports": {}
+}

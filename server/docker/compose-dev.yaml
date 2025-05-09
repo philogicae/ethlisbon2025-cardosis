@@ -1,0 +1,20 @@
+name: cardosis
+
+services:
+  cardosis-backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: cardosis-backend
+    container_name: cardosis-backend
+    ports:
+      - 6789:8000
+    env_file:
+      - ../.env
+    networks:
+      - cardosis
+
+networks:
+  cardosis:
+    name: cardosis
+    driver: bridge

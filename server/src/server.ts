@@ -1,0 +1,40 @@
+import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
+
+const app = new Application();
+app.use(oakCors());
+const router = new Router();
+
+// Logger
+app.use(async (ctx, next) => {
+	await next();
+	const rt = ctx.response.headers.get("X-Response-Time");
+	console.log(
+		`${new Date().toISOString().replace("T", " ").split(".")[0]} ${ctx.request.method}: ${ctx.request.url.pathname} - ${rt}`,
+	);
+});
+
+// Timing
+app.use(async (ctx, next) => {
+	const start = Date.now();
+	await next();
+	const ms = Date.now() - start;
+	ctx.response.headers.set("X-Response-Time", `${ms}ms`);
+});
+
+// Router
+router
+	.get("/v1/get/:string", async (ctx) => {
+		const { string } = ctx.params;
+		ctx.response.body = { string };
+	})
+	.post("/v1/post", async (ctx) => {
+		const { test } = await ctx.request.body.json();
+		ctx.response.body = { test, status: "ok" };
+	});
+
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+console.log("Running on http://localhost:8000");
+await app.listen({ port: 8000 });
