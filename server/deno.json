@@ -8,5 +8,7 @@
     "connect-vm": "bash ./scripts/connect-vm.sh",
     "restart": "bash ./scripts/restart.sh"
   },
-  "imports": {}
+  "imports": {
+    "viem": "npm:viem@^2.29.1"
+  }
 }
