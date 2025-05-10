@@ -44,7 +44,7 @@ const siweConfig: SIWEConfig = {
       chainId,
       nonce,
       // Human-readable ASCII assertion that the user will sign, and it must not contain `\n`.
-      statement: "Sign in With Etheƒreum.",
+      statement: "Sign in With Ethereum.",
     }).prepareMessage();
   },
   verifyMessage: async ({ message, signature }) =>
