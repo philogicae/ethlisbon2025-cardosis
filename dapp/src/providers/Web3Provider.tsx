@@ -11,6 +11,7 @@ import {
 import { SiweMessage } from "siwe";
 import { baseApi } from "@/constants/api";
 import axios from "axios";
+import { SIWE_SESSION_ID } from "@/constants/storage";
 
 const config = createConfig(
   getDefaultConfig({
@@ -59,13 +60,23 @@ const siweConfig: SIWEConfig = {
           },
         }
       )
-      .then((res) => res.data.ok),
+      .then((res) => {
+        console.log(res.data);
+        sessionStorage.setItem(
+          SIWE_SESSION_ID,
+          JSON.stringify(res.data.sessionId)
+        );
+        return res.data.ok;
+      }),
   getSession: async () =>
     axios
       .get(`${baseApi}/siwe/session`)
       .then((res) => (res.data.ok ? res.data : null)),
   signOut: async () =>
-    axios.get(`${baseApi}/siwe/signout`).then((res) => res.data.ok),
+    axios.get(`${baseApi}/siwe/signout`).then((res) => {
+      sessionStorage.removeItem(SIWE_SESSION_ID);
+      return res.data.ok;
+    }),
 };
 
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
