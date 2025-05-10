@@ -12,7 +12,7 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
 export function SavingsGoal({ className }: { className?: string }) {
-  const [goal, setGoal] = useState(300);
+  const [goal, setGoal] = useState(30);
   const min = 100;
   const max = 1000;
   const step = 10;
@@ -56,7 +56,7 @@ export function SavingsGoal({ className }: { className?: string }) {
             />
           ))}
         </div>
-        <Button className="mt-4 w-full text-black rounded-lg py-3 text-lg hover:bg-gray-100 transition">
+        <Button className="mt-4 w-full bg-foreground text-background rounded-lg py-3 text-lg hover:bg-gray-100 transition">
           Set Goal
         </Button>
       </CardContent>

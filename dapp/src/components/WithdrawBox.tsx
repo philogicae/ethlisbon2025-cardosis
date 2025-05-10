@@ -30,11 +30,11 @@ const WithdrawBox = () => {
   const [currency, setCurrency] = React.useState(currencies[0].value);
   const [toMyWallet, setToMyWallet] = React.useState(true);
   return (
-    <Card className="w-[520px]">
+    <Card className="w-[520px] gap-">
       {/* TODO: remove width */}
       <CardHeader>
-        <CardTitle>Withdraw</CardTitle>
-        <CardDescription>Top up your accounts</CardDescription>
+        <CardTitle>Top up your accounts</CardTitle>
+        {/* <CardDescription>Top up your accounts</CardDescription> */}
       </CardHeader>
       <CardContent className="flex flex-col items-center">
         <div className="relative mb-5">

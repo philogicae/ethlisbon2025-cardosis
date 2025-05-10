@@ -12,7 +12,14 @@ const Banner = ({ className }: { className?: string }) => {
       )}
       duration={7000}
     >
-      <Button variant="outline">Top Up</Button>
+      <div className="p-4 flex flex-wrap gap-4">
+        <p className="text-2xl font-bold w-full text-center uppercase">
+          Fuel Your Safe - Instantly
+        </p>
+        <Button variant="outline" className="m-auto">
+          Top Up
+        </Button>
+      </div>
     </AnimatedBorder>
   );
 };

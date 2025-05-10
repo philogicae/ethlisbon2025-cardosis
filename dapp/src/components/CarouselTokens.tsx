@@ -23,47 +23,50 @@ const CarouselTokens = ({ className }: { className?: string }) => {
   return (
     <Carousel
       className={cn(className, "h-full")}
-      opts={{ loop: true }}
+      opts={{ align: "start", loop: true }}
       plugins={[autoplay()]}
+      orientation="vertical"
     >
-      <CarouselContent className="h-full">
-        {(isLoading ? [loaderToken] : data)?.map((token, index) => (
-          <CarouselItem key={index} className="h-full">
-            <Card className="h-full justify-center">
-              <CardHeader className="flex items-center justify-between gap-2">
-                <CardTitle className="flex items-center gap-2">
-                  <Avatar
+      <CarouselContent className="h-[196px]">
+        {(isLoading ? [loaderToken, loaderToken] : data)?.map(
+          (token, index) => (
+            <CarouselItem key={index} className="basis-1/2">
+              <Card className="justify-center py-5">
+                <CardHeader className="flex items-center justify-between gap-2">
+                  <CardTitle className="flex items-center gap-2">
+                    <Avatar
+                      className={cn(
+                        "h-6 w-6",
+                        isLoading && "animate-pulse blur-md"
+                      )}
+                    >
+                      <AvatarImage
+                        src={token.attributes.image_url}
+                        alt={token.attributes.name}
+                      />
+                      <AvatarFallback>
+                        {token.attributes.symbol[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <CardDescription
+                      className={cn(isLoading && "animate-pulse blur-md")}
+                    >
+                      {token.attributes.symbol}
+                    </CardDescription>
+                  </CardTitle>
+                  <span
                     className={cn(
-                      "h-6 w-6",
+                      "text-4xl font-semibold",
                       isLoading && "animate-pulse blur-md"
                     )}
                   >
-                    <AvatarImage
-                      src={token.attributes.image_url}
-                      alt={token.attributes.name}
-                    />
-                    <AvatarFallback>
-                      {token.attributes.symbol[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <CardDescription
-                    className={cn(isLoading && "animate-pulse blur-md")}
-                  >
-                    {token.attributes.symbol}
-                  </CardDescription>
-                </CardTitle>
-                <span
-                  className={cn(
-                    "text-4xl font-semibold",
-                    isLoading && "animate-pulse blur-md"
-                  )}
-                >
-                  ${formatNumber(token.attributes.price_usd)}
-                </span>
-              </CardHeader>
-            </Card>
-          </CarouselItem>
-        ))}
+                    ${formatNumber(token.attributes.price_usd)}
+                  </span>
+                </CardHeader>
+              </Card>
+            </CarouselItem>
+          )
+        )}
       </CarouselContent>
     </Carousel>
   );

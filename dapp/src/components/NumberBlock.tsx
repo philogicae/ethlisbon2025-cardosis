@@ -20,7 +20,7 @@ const NumberBlock = ({
   className?: string;
 }) => {
   return (
-    <Card className={cn(className)}>
+    <Card className={cn(className, "gap-2")}>
       <CardHeader className="relative">
         <CardDescription>{description}</CardDescription>
         <CardTitle className="text-3xl font-black">€{value}</CardTitle>

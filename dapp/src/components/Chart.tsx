@@ -112,6 +112,7 @@ export function Chart({ className }: { className?: string }) {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
+        {/* TODO: Add tons of description */}
         <div className="flex gap-2 font-medium">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>

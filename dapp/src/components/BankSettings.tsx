@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
+import { Button } from "./ui/button";
 
 export function BankSettings({ className }: { className?: string }) {
   // const [strict, setStrict] = useState(true);
@@ -29,7 +30,7 @@ export function BankSettings({ className }: { className?: string }) {
             className="flex flex-col items-start gap-[0.5rem] cursor-pointer select-none"
             htmlFor="byTransaction"
           >
-            <span className="font-semibold text-white">Roundup expenses</span>
+            <span className="font-medium text-white">Roundup expenses</span>
             <div className="text-muted-foreground text-sm font-light leading-[1.2rem]">
               Automatically round up every expense to the nearest whole number.
             </div>
@@ -41,7 +42,7 @@ export function BankSettings({ className }: { className?: string }) {
             className="flex flex-col items-start gap-[0.5rem] cursor-pointer select-none"
             htmlFor="byTime"
           >
-            <span className="font-semibold text-white">Planned round up</span>
+            <span className="font-medium text-white">Scheduled round up</span>
             <div className="text-muted-foreground text-sm font-light leading-[1.2rem]">
               Automatically round up your balance to the nearest whole number
               every day.
@@ -49,9 +50,11 @@ export function BankSettings({ className }: { className?: string }) {
           </Label>
           <Switch id="byTime" defaultChecked />
         </div>
-        <button className="mt-2 w-full border border-white/10 bg-black/30 text-white rounded-lg py-3 font-medium text-lg hover:bg-black/40 transition">
+        <Button
+        // className="mt-2 w-full border border-white/10 bg-black/30 text-white rounded-lg py-3 font-medium text-lg hover:bg-black/40 transition"
+        >
           Save preferences
-        </button>
+        </Button>
       </CardContent>
     </Card>
   );

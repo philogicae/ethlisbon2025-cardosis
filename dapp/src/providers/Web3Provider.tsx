@@ -2,7 +2,15 @@
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { gnosis, sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ConnectKitProvider, getDefaultConfig } from "connectkit";
+import {
+  ConnectKitProvider,
+  getDefaultConfig,
+  SIWEConfig,
+  SIWEProvider,
+} from "connectkit";
+import { SiweMessage } from "siwe";
+import { baseApi } from "@/constants/api";
+import axios from "axios";
 
 const config = createConfig(
   getDefaultConfig({
@@ -23,11 +31,52 @@ const config = createConfig(
 
 const queryClient = new QueryClient();
 
+const siweConfig: SIWEConfig = {
+  getNonce: async () =>
+    axios.get(`${baseApi}/siwe/nonce`).then((res) => res.data),
+  createMessage: ({ nonce, address, chainId }) => {
+    console.log(nonce, address, chainId);
+    return new SiweMessage({
+      version: "1",
+      domain: window.location.host,
+      uri: window.location.origin,
+      address,
+      chainId,
+      nonce,
+      // Human-readable ASCII assertion that the user will sign, and it must not contain `\n`.
+      statement: "Sign in With Etheƒreum.",
+    }).prepareMessage();
+  },
+  verifyMessage: async ({ message, signature }) =>
+    axios
+      .post(
+        `${baseApi}/siwe/verify`,
+        {
+          message,
+          signature,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => res.data.ok),
+  getSession: async () =>
+    axios
+      .get(`${baseApi}/siwe/session`)
+      .then((res) => (res.data.ok ? res.data : null)),
+  signOut: async () =>
+    axios.get(`${baseApi}/siwe/signout`).then((res) => res.data.ok),
+};
+
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <ConnectKitProvider>{children}</ConnectKitProvider>
+        <SIWEProvider {...siweConfig}>
+          <ConnectKitProvider>{children}</ConnectKitProvider>
+        </SIWEProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

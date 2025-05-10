@@ -1,4 +1,5 @@
-import { baseUrl } from "@/constants/api";
+import axios from 'axios';
+import { geckoApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
 
 export type Token = {
@@ -17,18 +18,26 @@ export type Token = {
 
 const fetchToken = async (addr: string[]): Promise<Token[]> => {
   const responses = await Promise.all([
-    fetch(`${baseUrl}/networks/xdai/tokens/multi/${addr}`),
+    axios.get(`${geckoApi}/networks/xdai/tokens/multi/${addr}`).then(res => res.data),
     // fetch(
     //   `${baseUrl}/networks/eth/tokens/multi/0x39b8B6385416f4cA36a20319F70D28621895279D`
     // ), // remove hardcoded contract (values should be fetched from xdai(Gnosis))
   ]);
 
-  // Parse all responses as JSON in parallel
-  const jsons = await Promise.all(responses.map(res => res.json()));
-
-  // Combine data arrays from both responses (assuming each json has a 'data' property)
-  const combinedTokens = jsons.flatMap(json => json.data);
-  return combinedTokens;
+  const tokens = await Promise.all(
+    responses.map(async (response) => {
+      // const res = await response.json();
+      const res = response.data;
+      return res.data.map((item: any) => {
+        return {
+          address: item.attributes.address,
+          name: item.attributes.name,
+          symbol: item.attributes.symbol,
+        };
+      });
+    })
+  );
+  return tokens.flat();
 };
 
 const useToken = (searchValue: string[]) => {
