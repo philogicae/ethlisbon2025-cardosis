@@ -95,16 +95,34 @@ apiRouter
 					timestamp: timestamp - 1000 * 60 * 60 * 3,
 				},
 				{
+					type: "saving",
+					currency: "EURe",
+					amount: 0.5,
+					timestamp: timestamp - 1000 * 60 * 60 * 6 - 1,
+				},
+				{
 					type: "spend",
 					currency: "EURe",
 					amount: 7.5,
 					timestamp: timestamp - 1000 * 60 * 60 * 6,
 				},
 				{
+					type: "saving",
+					currency: "EURe",
+					amount: 0.5,
+					timestamp: timestamp - 1000 * 60 * 60 * 12 - 1,
+				},
+				{
 					type: "spend",
 					currency: "EURe",
 					amount: 6.5,
 					timestamp: timestamp - 1000 * 60 * 60 * 12,
+				},
+				{
+					type: "saving",
+					currency: "EURe",
+					amount: 0.5,
+					timestamp: timestamp - 1000 * 60 * 60 * 24 - 1,
 				},
 				{
 					type: "spend",

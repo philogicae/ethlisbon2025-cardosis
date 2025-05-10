@@ -10,7 +10,6 @@ interface UserSession {
 const nonces = new Map<string, number>(); // nonce -> expirationTimestamp
 const NONCE_EXPIRATION_MS = 10 * 60 * 1000;
 const sessions = new Map<string, UserSession>(); // sessionId -> { address, chainId }
-//const SESSION_COOKIE_NAME = "cardosis_session";
 
 function generateNonce(): string {
 	const arr = new Uint8Array(16);
@@ -104,14 +103,6 @@ siweRouter.post("/verify", async (ctx) => {
 				address: parsedMessage.address,
 				chainId: parsedMessage.chainId,
 			});
-			/* ctx.cookies.set(SESSION_COOKIE_NAME, sessionId, {
-				httpOnly: true,
-				secure: ctx.request.secure,
-				sameSite: "none",
-				domain: "cardosis.rphi.xyz",
-				maxAge: 10 * 60,
-				path: "/",
-			}); */
 			ctx.response.status = 200;
 			ctx.response.body = {
 				ok: true,
@@ -146,7 +137,6 @@ siweRouter.post("/verify", async (ctx) => {
 // 3. Get Session
 siweRouter.post("/session", async (ctx) => {
 	const { sessionId } = await ctx.request.body.json();
-	//const sessionId = await ctx.cookies.get(SESSION_COOKIE_NAME);
 	const sessionData = sessionId ? sessions.get(sessionId) : null;
 	ctx.response.status = 200;
 	ctx.response.body = sessionData; // Returns { address, chainId } or null
@@ -155,10 +145,8 @@ siweRouter.post("/session", async (ctx) => {
 // 4. Logout
 siweRouter.post("/logout", async (ctx) => {
 	const { sessionId } = await ctx.request.body.json();
-	//const sessionId = await ctx.cookies.get(SESSION_COOKIE_NAME);
 	if (sessionId) {
 		sessions.delete(sessionId);
-		//ctx.cookies.delete(SESSION_COOKIE_NAME, { path: "/" });
 	}
 	ctx.response.status = 200;
 	ctx.response.body = { ok: true };
