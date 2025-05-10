@@ -10,6 +10,8 @@ console.log(rows);
 db.close();
 
 const app = new Application();
+app.proxy = true; // Trust proxy headers (e.g., X-Forwarded-Proto for secure cookies)
+
 app.use(
 	oakCors({
 		origin: [
@@ -20,6 +22,7 @@ app.use(
 		],
 		allowedHeaders: ["*"],
 		credentials: true,
+		optionsSuccessStatus: 200,
 	}),
 );
 
