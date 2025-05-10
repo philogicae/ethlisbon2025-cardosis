@@ -80,14 +80,15 @@ apiRouter
 			status: "ok",
 			transactions: [
 				{
-					type: "withdraw", // reserve account -> wallet
-					account: "reserve",
+					type: "withdraw",
 					currency: "EURe",
+					from_account: "reserve",
+					to_account: "wallet",
 					amount: 100,
 					timestamp: timestamp - 1000 * 60 * 60 * 2,
 				},
 				{
-					type: "transfer", // reserve account -> card account
+					type: "transfer",
 					currency: "EURe",
 					from_account: "reserve",
 					to_account: "card",
@@ -97,49 +98,63 @@ apiRouter
 				{
 					type: "saving",
 					currency: "EURe",
+					from_account: "card",
+					to_account: "dca",
 					amount: 0.5,
 					timestamp: timestamp - 1000 * 60 * 60 * 6 - 1,
 				},
 				{
 					type: "spend",
 					currency: "EURe",
+					from_account: "card",
+					to_account: "gnosispay",
 					amount: 7.5,
 					timestamp: timestamp - 1000 * 60 * 60 * 6,
 				},
 				{
 					type: "saving",
 					currency: "EURe",
+					from_account: "card",
+					to_account: "dca",
 					amount: 0.5,
 					timestamp: timestamp - 1000 * 60 * 60 * 12 - 1,
 				},
 				{
 					type: "spend",
 					currency: "EURe",
+					from_account: "card",
+					to_account: "gnosispay",
 					amount: 6.5,
 					timestamp: timestamp - 1000 * 60 * 60 * 12,
 				},
 				{
 					type: "saving",
 					currency: "EURe",
+					from_account: "card",
+					to_account: "dca",
 					amount: 0.5,
 					timestamp: timestamp - 1000 * 60 * 60 * 24 - 1,
 				},
 				{
 					type: "spend",
 					currency: "EURe",
+					from_account: "card",
+					to_account: "gnosispay",
 					amount: 5.5,
 					timestamp: timestamp - 1000 * 60 * 60 * 24,
 				},
 				{
-					type: "deposit", // wallet -> reserve account
-					account: "reserve",
+					type: "deposit",
+					from_account: "wallet",
+					to_account: "reserve",
 					currency: "EURe",
 					amount: 500,
 					timestamp: timestamp - 1000 * 60 * 60 * 47,
 				},
 				{
-					type: "deposit", // wallet -> card account
-					account: "card",
+					type: "deposit",
+					from_account: "wallet",
+					to_account: "card",
 					currency: "EURe",
 					amount: 50,
 					timestamp: timestamp - 1000 * 60 * 60 * 48,
