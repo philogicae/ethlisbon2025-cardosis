@@ -73,6 +73,18 @@ apiRouter
 			},
 		};
 	})
+	.post("/api/account/balances", async (ctx) => {
+		const { address } = await ctx.request.body.json();
+		ctx.response.body = {
+			status: "ok",
+			balances: {
+				card: 150,
+				dca_current: 50,
+				dca_total: 100,
+				reserve: 100000,
+			},
+		};
+	})
 	.post("/api/account/transactions", async (ctx) => {
 		const { address } = await ctx.request.body.json();
 		const timestamp = Date.now();
@@ -80,84 +92,147 @@ apiRouter
 			status: "ok",
 			transactions: [
 				{
+					type: "scheduled",
+					from_account: "reserve",
+					to_account: "dca",
+					details: {
+						token_in: "EURe",
+						amount_in: 10,
+						token_out: "WETH",
+						amount_out: 0.005,
+					},
+					timestamp: timestamp - 1000 * 60 * 60 * 2,
+					status: "pending",
+				},
+				{
 					type: "withdraw",
-					currency: "EURe",
 					from_account: "reserve",
 					to_account: "wallet",
-					amount: 100,
+					details: {
+						token_in: "EURe",
+						amount_in: 100,
+						token_out: "",
+						amount_out: 0,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 2,
+					status: "pending",
 				},
 				{
 					type: "transfer",
-					currency: "EURe",
 					from_account: "reserve",
 					to_account: "card",
-					amount: 10,
+					details: {
+						token_in: "EURe",
+						amount_in: 10,
+						token_out: "EURe",
+						amount_out: 10,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 3,
+					status: "executed",
 				},
 				{
 					type: "saving",
-					currency: "EURe",
 					from_account: "card",
 					to_account: "dca",
-					amount: 0.5,
+					details: {
+						token_in: "EURe",
+						amount_in: 0.5,
+						token_out: "WETH",
+						amount_out: 0.0001,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 6 - 1,
+					status: "executed",
 				},
 				{
 					type: "spend",
-					currency: "EURe",
 					from_account: "card",
 					to_account: "gnosispay",
-					amount: 7.5,
+					details: {
+						token_in: "EURe",
+						amount_in: 7.5,
+						token_out: "",
+						amount_out: 0,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 6,
+					status: "executed",
 				},
 				{
 					type: "saving",
-					currency: "EURe",
 					from_account: "card",
 					to_account: "dca",
-					amount: 0.5,
+					details: {
+						token_in: "EURe",
+						amount_in: 0.5,
+						token_out: "WETH",
+						amount_out: 0.0001,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 12 - 1,
+					status: "executed",
 				},
 				{
 					type: "spend",
-					currency: "EURe",
 					from_account: "card",
 					to_account: "gnosispay",
-					amount: 6.5,
+					details: {
+						token_in: "EURe",
+						amount_in: 6.5,
+						token_out: "",
+						amount_out: 0,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 12,
+					status: "executed",
 				},
 				{
 					type: "saving",
-					currency: "EURe",
 					from_account: "card",
 					to_account: "dca",
-					amount: 0.5,
+					details: {
+						token_in: "EURe",
+						amount_in: 0.5,
+						token_out: "WETH",
+						amount_out: 0.0001,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 24 - 1,
+					status: "executed",
 				},
 				{
 					type: "spend",
-					currency: "EURe",
 					from_account: "card",
 					to_account: "gnosispay",
-					amount: 5.5,
+					details: {
+						token_in: "EURe",
+						amount_in: 5.5,
+						token_out: "",
+						amount_out: 0,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 24,
+					status: "executed",
 				},
 				{
 					type: "deposit",
 					from_account: "wallet",
 					to_account: "reserve",
-					currency: "EURe",
-					amount: 500,
+					details: {
+						token_in: "",
+						amount_in: 0,
+						token_out: "EURe",
+						amount_out: 500,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 47,
+					status: "executed",
 				},
 				{
 					type: "deposit",
 					from_account: "wallet",
 					to_account: "card",
-					currency: "EURe",
-					amount: 50,
+					details: {
+						token_in: "",
+						amount_in: 0,
+						token_out: "EURe",
+						amount_out: 50,
+					},
 					timestamp: timestamp - 1000 * 60 * 60 * 48,
+					status: "executed",
 				},
 			],
 		};
