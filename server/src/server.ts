@@ -15,8 +15,10 @@ app.use(
 		origin: [
 			/localhost:\d+$/,
 			"http://localhost:3000",
+			"http://192.168.1.135:3000",
 			"https://cardosis.on-fleek.app",
 		],
+		allowedHeaders: ["*"],
 		credentials: true,
 	}),
 );
@@ -56,6 +58,73 @@ apiRouter
 	.post("/api/post", async (ctx) => {
 		const { test } = await ctx.request.body.json();
 		ctx.response.body = { test, status: "ok" };
+	})
+	.post("/api/account", async (ctx) => {
+		const { address } = await ctx.request.body.json();
+		ctx.response.body = {
+			status: "ok",
+			accounts: {
+				card: address,
+				dca: address,
+				reserve: address,
+			},
+		};
+	})
+	.post("/api/account/transactions", async (ctx) => {
+		const { address } = await ctx.request.body.json();
+		const timestamp = Date.now();
+		ctx.response.body = {
+			status: "ok",
+			transactions: [
+				{
+					type: "withdraw", // reserve account -> wallet
+					account: "reserve",
+					currency: "EURe",
+					amount: 100,
+					timestamp: timestamp - 1000 * 60 * 60 * 2,
+				},
+				{
+					type: "transfer", // reserve account -> card account
+					currency: "EURe",
+					from_account: "reserve",
+					to_account: "card",
+					amount: 10,
+					timestamp: timestamp - 1000 * 60 * 60 * 3,
+				},
+				{
+					type: "spend",
+					currency: "EURe",
+					amount: 7.5,
+					timestamp: timestamp - 1000 * 60 * 60 * 6,
+				},
+				{
+					type: "spend",
+					currency: "EURe",
+					amount: 6.5,
+					timestamp: timestamp - 1000 * 60 * 60 * 12,
+				},
+				{
+					type: "spend",
+					currency: "EURe",
+					amount: 5.5,
+					timestamp: timestamp - 1000 * 60 * 60 * 24,
+				},
+				{
+					type: "deposit", // wallet -> reserve account
+					account: "reserve",
+					currency: "EURe",
+					amount: 500,
+					timestamp: timestamp - 1000 * 60 * 60 * 47,
+				},
+				{
+					type: "deposit", // wallet -> card account
+					account: "card",
+					currency: "EURe",
+					amount: 50,
+					timestamp: timestamp - 1000 * 60 * 60 * 48,
+				},
+			],
+		};
 	});
 
 app.use(apiRouter.routes());
