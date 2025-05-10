@@ -85,6 +85,34 @@ apiRouter
 			},
 		};
 	})
+	.post("/api/account/charts", async (ctx) => {
+		const { address } = await ctx.request.body.json();
+		ctx.response.body = {
+			status: "ok",
+			charts: [
+				{ timestamp: 1746911548, card: 150, dca: 1, reserve: 1000 },
+				{ timestamp: 1746915148, card: 145, dca: 1.2, reserve: 1005 },
+				{ timestamp: 1746918748, card: 140, dca: 1.5, reserve: 1010 },
+				{ timestamp: 1746922348, card: 135, dca: 1.7, reserve: 1015 },
+				{ timestamp: 1746925948, card: 130, dca: 1.9, reserve: 1020 },
+				{ timestamp: 1746929548, card: 125, dca: 2.1, reserve: 1025 },
+				{ timestamp: 1746933148, card: 120, dca: 2.3, reserve: 1030 },
+				{ timestamp: 1746936748, card: 115, dca: 2.5, reserve: 1035 },
+				{ timestamp: 1746940348, card: 110, dca: 2.7, reserve: 1040 },
+				{ timestamp: 1746943948, card: 105, dca: 2.9, reserve: 1045 },
+				{ timestamp: 1746947548, card: 100, dca: 3.1, reserve: 1050 },
+				{ timestamp: 1746951148, card: 200, dca: 3.3, reserve: 950 },
+				{ timestamp: 1746954748, card: 195, dca: 3.5, reserve: 960 },
+				{ timestamp: 1746958348, card: 190, dca: 3.7, reserve: 965 },
+				{ timestamp: 1746961948, card: 185, dca: 3.9, reserve: 970 },
+				{ timestamp: 1746965548, card: 180, dca: 4.1, reserve: 975 },
+				{ timestamp: 1746969148, card: 175, dca: 4.3, reserve: 980 },
+				{ timestamp: 1746972748, card: 170, dca: 4.5, reserve: 985 },
+				{ timestamp: 1746976348, card: 165, dca: 4.7, reserve: 990 },
+				{ timestamp: 1746979948, card: 160, dca: 5.0, reserve: 1000 },
+			],
+		};
+	})
 	.post("/api/account/transactions", async (ctx) => {
 		const { address } = await ctx.request.body.json();
 		const timestamp = Date.now();
