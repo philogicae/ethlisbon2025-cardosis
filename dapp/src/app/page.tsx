@@ -10,7 +10,6 @@ import WithdrawBox from "@/components/WithdrawBox";
 import { ConnectKitButton } from "connectkit";
 import CarouselTokens from "@/components/CarouselTokens";
 import { useAccount } from "wagmi";
-import { getAddress } from "viem";
 import { useEffect } from "react";
 
 /**
@@ -50,11 +49,6 @@ export default function Home() {
           className="h-fit col-span-1"
           description="Total Saved Funds"
           value={230}
-        />
-        <NumberBlock
-          className="h-fit col-span-1"
-          description="Interest earned"
-          value={112}
         />
         <div
           className={`col-start-3 row-start-1 row-span-2

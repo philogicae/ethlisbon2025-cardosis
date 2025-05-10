@@ -21,7 +21,7 @@ export function BankSettings({ className }: { className?: string }) {
   return (
     <Card className={cn("bg-card flex flex-col items-center", className)}>
       <CardHeader className="w-full text-left pb-2">
-        <CardTitle>Roundup Settings</CardTitle>
+        <CardTitle>Crypto saving settings</CardTitle>
         <CardDescription>Manage your saving roundups here.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col w-full gap-6">
@@ -30,9 +30,9 @@ export function BankSettings({ className }: { className?: string }) {
             className="flex flex-col items-start gap-[0.5rem] cursor-pointer select-none"
             htmlFor="byTransaction"
           >
-            <span className="font-medium text-white">Roundup expenses</span>
+            <span className="font-medium text-white">DCA on spending</span>
             <div className="text-muted-foreground text-sm font-light leading-[1.2rem]">
-              Automatically round up every expense to the nearest whole number.
+              Automatically round up every expense to buy crypto.
             </div>
           </Label>
           <Switch id="byTransaction" defaultChecked />
@@ -42,10 +42,9 @@ export function BankSettings({ className }: { className?: string }) {
             className="flex flex-col items-start gap-[0.5rem] cursor-pointer select-none"
             htmlFor="byTime"
           >
-            <span className="font-medium text-white">Scheduled round up</span>
+            <span className="font-medium text-white">Scheduled DCA</span>
             <div className="text-muted-foreground text-sm font-light leading-[1.2rem]">
-              Automatically round up your balance to the nearest whole number
-              every day.
+              Schedule your DCA plan to buy crypto.
             </div>
           </Label>
           <Switch id="byTime" defaultChecked />

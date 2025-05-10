@@ -9,7 +9,7 @@ export type Token = {
   timestamp: number;
   from_account?: string;
   to_account?: string;
-  type: "withdraw" | "transfer" | 'spend' | 'deposit';
+  type: "withdraw" | "transfer" | 'spend' | 'deposit' | 'saving';
 };
 
 const fetchTransactionsList = async (

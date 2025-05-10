@@ -78,7 +78,8 @@ const siweConfig: SIWEConfig = {
   },
   signOut: async () => {
     const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
-    return axios.post(`${baseApi}/siwe/signout`, { sessionId }).then((res) => {
+
+    return axios.post(`${baseApi}/siwe/logout`, { sessionId }).then((res) => {
       localStorage.removeItem(SIWE_SESSION_ID);
       return res.data.ok;
     });

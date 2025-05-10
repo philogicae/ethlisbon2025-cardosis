@@ -14,9 +14,10 @@ import {
   BanknoteArrowDown,
   BanknoteArrowUp,
   Send,
-  Barcode,
+  CreditCard,
   Euro,
   MoveRight,
+  PiggyBank,
 } from "lucide-react";
 
 const mockTransactions = [
@@ -70,7 +71,9 @@ const avtrsmth = (type: string) => {
     case "transfer":
       return <Send size={28} />;
     case "spend":
-      return <Barcode size={28} />;
+      return <CreditCard size={28} />;
+    case "saving":
+      return <PiggyBank size={28} />;
     default:
       return <Euro size={28} />;
   }
@@ -114,8 +117,8 @@ export function RecentTransactions({ className }: { className?: string }) {
                       isLoading && "animate-pulse blur-md select-none"
                     )}
                   >
-                    <p className="font-medium text-white">
-                      {transaction.currency}
+                    <p className="font-medium text-white capitalize">
+                      {transaction.type}
                     </p>
                     <time
                       dateTime={transaction.timestamp.toString()}
@@ -130,30 +133,29 @@ export function RecentTransactions({ className }: { className?: string }) {
                   <span
                     className={cn(
                       isLoading && "animate-pulse blur-md select-none",
-                      transaction.amount > 0
-                        ? "text-foreground"
-                        : "text-destructive",
+                      transaction.type === "withdraw"
+                        ? "text-destructive"
+                        : "text-foreground",
                       "font-medium text-lg"
                     )}
                   >
-                    €{Math.abs(transaction.amount)}
+                    {transaction.type === "withdraw" ? "-" : "+"}€
+                    {Math.abs(transaction.amount)}
                   </span>
 
-                  {/* <div
+                  <div
                     className={cn(
                       isLoading && "animate-pulse blur-md select-none",
                       "flex items-center gap-2 text-sm text-muted-foreground"
                     )}
                   >
-                    {transaction.type === "transfer" && (
-                      <div className="flex items-center gap-2 ml-auto mr-">
-                        ({transaction.from_account}
-                        <MoveRight size={16} />
-                        {transaction.to_account})
-                      </div>
-                    )}
-                    <p>{transaction.type}</p>
-                  </div> */}
+                    <div className="flex items-center gap-2 ml-auto text-card-foreground">
+                      ({transaction.from_account}
+                      <MoveRight size={16} />
+                      {transaction.to_account})
+                    </div>
+                    <p>{transaction.currency}</p>
+                  </div>
                 </div>
               </li>
             ))}
