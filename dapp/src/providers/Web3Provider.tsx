@@ -61,22 +61,28 @@ const siweConfig: SIWEConfig = {
         }
       )
       .then((res) => {
-        console.log(res.data);
-        sessionStorage.setItem(
-          SIWE_SESSION_ID,
-          JSON.stringify(res.data.sessionId)
-        );
+        localStorage.setItem(SIWE_SESSION_ID, res.data.sessionId);
         return res.data.ok;
       }),
-  getSession: async () =>
-    axios
-      .get(`${baseApi}/siwe/session`)
-      .then((res) => (res.data.ok ? res.data : null)),
-  signOut: async () =>
-    axios.get(`${baseApi}/siwe/signout`).then((res) => {
-      sessionStorage.removeItem(SIWE_SESSION_ID);
+  getSession: async () => {
+    const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
+
+    return axios.post(`${baseApi}/siwe/session`, { sessionId }).then((res) => {
+      if (res.data.address) {
+        return res.data;
+      } else {
+        localStorage.removeItem(SIWE_SESSION_ID);
+        return null;
+      }
+    });
+  },
+  signOut: async () => {
+    const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
+    return axios.post(`${baseApi}/siwe/signout`, { sessionId }).then((res) => {
+      localStorage.removeItem(SIWE_SESSION_ID);
       return res.data.ok;
-    }),
+    });
+  },
 };
 
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
