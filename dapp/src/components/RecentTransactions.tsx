@@ -160,7 +160,9 @@ export function RecentTransactions({ className }: { className?: string }) {
         </ul>
       </CardContent>
       <CardFooter>
-        <Button variant="outline">See all</Button>
+        <Button variant="outline" className="mx-auto">
+          See all
+        </Button>
       </CardFooter>
     </Card>
   );
