@@ -10,7 +10,16 @@ console.log(rows);
 db.close();
 
 const app = new Application();
-app.use(oakCors());
+app.use(
+	oakCors({
+		origin: [
+			/localhost:\d+$/,
+			"http://localhost:3000",
+			"https://cardosis.on-fleek.app",
+		],
+		credentials: true,
+	}),
+);
 
 // Logger
 app.use(async (ctx, next) => {
