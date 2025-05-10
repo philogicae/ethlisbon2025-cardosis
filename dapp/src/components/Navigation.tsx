@@ -1,14 +1,20 @@
-import Link from "next/link";
+// import Link from "next/link";
+// import {
+//   Sidebar,
+//   SidebarContent,
+//   SidebarGroup,
+//   SidebarHeader,
+//   SidebarMenu,
+//   SidebarMenuButton,
+//   SidebarMenuItem,
+// } from "./ui/sidebar";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "./ui/sidebar";
-import { Home, PiggyBank, Search, Settings, Wallet } from "lucide-react";
+  Home,
+  // PiggyBank,
+  Search,
+  Settings,
+  Wallet,
+} from "lucide-react";
 import { FloatingDock } from "./ui/animations/FloatingDock";
 
 const items = [

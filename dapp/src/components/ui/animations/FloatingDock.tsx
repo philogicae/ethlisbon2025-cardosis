@@ -97,7 +97,7 @@ const FloatingDockDesktop = ({
   items: { title: string; icon: React.ReactNode; href: string }[];
   className?: string;
 }) => {
-  let mouseY = useMotionValue(Infinity);
+  const mouseY = useMotionValue(Infinity);
   return (
     <motion.div
       onMouseMove={(e) => mouseY.set(e.pageY)}
@@ -128,7 +128,7 @@ function IconContainer({
   const ref = useRef<HTMLDivElement>(null);
 
   const distance = useTransform(mouseY, (val) => {
-    let bounds = ref.current?.getBoundingClientRect() ?? { y: 0, height: 0 };
+    const bounds = ref.current?.getBoundingClientRect() ?? { y: 0, height: 0 };
 
     return val - bounds.y - bounds.height / 2;
   });

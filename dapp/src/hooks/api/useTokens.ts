@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import { geckoApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -18,7 +18,9 @@ export type Token = {
 
 const fetchToken = async (addr: string[]): Promise<Token[]> => {
   const responses = await Promise.all([
-    axios.get(`${geckoApi}/networks/xdai/tokens/multi/${addr}`).then(res => res.data),
+    axios
+      .get(`${geckoApi}/networks/xdai/tokens/multi/${addr}`)
+      .then((res) => res.data),
     // fetch(
     //   `${baseUrl}/networks/eth/tokens/multi/0x39b8B6385416f4cA36a20319F70D28621895279D`
     // ), // remove hardcoded contract (values should be fetched from xdai(Gnosis))
@@ -28,13 +30,18 @@ const fetchToken = async (addr: string[]): Promise<Token[]> => {
     responses.map(async (response) => {
       // const res = await response.json();
       const res = response.data;
-      return res.data.map((item: any) => {
-        return {
-          address: item.attributes.address,
-          name: item.attributes.name,
-          symbol: item.attributes.symbol,
-        };
-      });
+      //   remove this type later
+      return res.data.map(
+        (item: {
+          attributes: { address: string; name: string; symbol: string };
+        }) => {
+          return {
+            address: item.attributes.address,
+            name: item.attributes.name,
+            symbol: item.attributes.symbol,
+          };
+        }
+      );
     })
   );
   return tokens.flat();
