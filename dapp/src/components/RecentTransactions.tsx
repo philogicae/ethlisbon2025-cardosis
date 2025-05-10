@@ -6,80 +6,158 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { cn, humanReadableDate } from "@/lib/utils";
+import { useTransactionsList } from "@/hooks/api/useTransactionslist";
+import { useAccount } from "wagmi";
+import {
+  BanknoteArrowDown,
+  BanknoteArrowUp,
+  Send,
+  Barcode,
+  Euro,
+  MoveRight,
+} from "lucide-react";
 
-const transactions = [
+const mockTransactions = [
   {
-    name: "USDT",
-    date: "2025-08-08",
-    amount: 1999.0,
-    avatar: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    account: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    amount: 22.5,
+    currency: "EURe",
+    timestamp: 1746887385749,
+    type: "withdraw",
   },
   {
-    name: "ETH",
-    date: "2025-07-08",
-    amount: 39.0,
-    avatar: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    account: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    amount: 22.5,
+    currency: "EURe",
+    timestamp: 1746887385749,
+    from_account: "reserve",
+    to_account: "card",
+    type: "transfer",
   },
   {
-    name: "SHIBA",
-    date: "2025-06-08",
-    amount: -299.0,
-    avatar: "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
+    account: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    amount: 22.5,
+    currency: "EURe",
+    timestamp: 1746887385749,
+    type: "withdraw",
   },
   {
-    name: "MATIC",
-    date: "2025-06-08",
-    amount: 99.0,
-    avatar: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+    account: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    amount: 322.5,
+    currency: "EURe",
+    timestamp: 1746887385749,
+    from_account: "reserve",
+    to_account: "card",
+    type: "transfer",
   },
   {
-    name: "USDT",
-    date: "2025-05-08",
-    amount: -39.0,
-    avatar: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    account: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    amount: 1122.5,
+    currency: "EURe",
+    timestamp: 1746887385749,
+    type: "withdraw",
   },
 ];
 
+const avtrsmth = (type: string) => {
+  switch (type) {
+    case "withdraw":
+      return <BanknoteArrowDown size={28} />;
+    case "deposit":
+      return <BanknoteArrowUp size={28} />;
+    case "transfer":
+      return <Send size={28} />;
+    case "spend":
+      return <Barcode size={28} />;
+    default:
+      return <Euro size={28} />;
+  }
+};
+
 export function RecentTransactions({ className }: { className?: string }) {
+  const { address } = useAccount();
+  const { isLoading, data: transactions } = useTransactionsList(address);
+
   return (
     <Card className={cn(className)}>
       <CardHeader>
         <CardTitle>Recent Transactions</CardTitle>
         <CardDescription>
-          You&apos;ve made 10 transactions today.
+          You&apos;ve made{" "}
+          {isLoading ? (
+            <span className="animate-pulse blur-md select-none">10</span>
+          ) : (
+            transactions?.length
+          )}{" "}
+          transactions today.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-6">
-        {transactions.map((transaction, i) => (
-          <div key={i} className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={`https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${transaction.avatar}/logo.png`}
-                  alt={transaction.name}
-                />
-                <AvatarFallback>{transaction.name[0]}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium text-white">{transaction.name}</p>
-                <p className="text-muted-foreground text-sm">
-                  {transaction.date}
-                </p>
-              </div>
-            </div>
-            <div
-              className={`font-medium text-lg ${
-                transaction.amount > 0 ? "text-foreground" : "text-destructive"
-              }`}
-            >
-              {transaction.amount > 0 ? "+" : "-"}€
-              {Math.abs(transaction.amount)}
-            </div>
-          </div>
-        ))}
+      <CardContent>
+        <ul className="grid gap-6">
+          {(isLoading ? mockTransactions : transactions)
+            ?.slice(0, 5)
+            .map((transaction, i) => (
+              <li key={i} className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div
+                    className={cn(
+                      isLoading && "animate-pulse blur-md select-none",
+                      "h-10 w-10 rounded-full bg-accent text-secondary flex items-center justify-center"
+                    )}
+                  >
+                    {avtrsmth(transaction.type)}
+                  </div>
+                  <div
+                    className={cn(
+                      isLoading && "animate-pulse blur-md select-none"
+                    )}
+                  >
+                    <p className="font-medium text-white">
+                      {transaction.currency}
+                    </p>
+                    <time
+                      dateTime={transaction.timestamp.toString()}
+                      className="text-muted-foreground text-sm"
+                    >
+                      {humanReadableDate(transaction.timestamp)}
+                    </time>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-end">
+                  <span
+                    className={cn(
+                      isLoading && "animate-pulse blur-md select-none",
+                      transaction.amount > 0
+                        ? "text-foreground"
+                        : "text-destructive",
+                      "font-medium text-lg"
+                    )}
+                  >
+                    €{Math.abs(transaction.amount)}
+                  </span>
+
+                  {/* <div
+                    className={cn(
+                      isLoading && "animate-pulse blur-md select-none",
+                      "flex items-center gap-2 text-sm text-muted-foreground"
+                    )}
+                  >
+                    {transaction.type === "transfer" && (
+                      <div className="flex items-center gap-2 ml-auto mr-">
+                        ({transaction.from_account}
+                        <MoveRight size={16} />
+                        {transaction.to_account})
+                      </div>
+                    )}
+                    <p>{transaction.type}</p>
+                  </div> */}
+                </div>
+              </li>
+            ))}
+        </ul>
       </CardContent>
       <CardFooter>
         <Button variant="outline">See all</Button>

@@ -37,7 +37,7 @@ const CarouselTokens = ({ className }: { className?: string }) => {
                     <Avatar
                       className={cn(
                         "h-6 w-6",
-                        isLoading && "animate-pulse blur-md"
+                        isLoading && "animate-pulse blur-md select-none"
                       )}
                     >
                       <AvatarImage
@@ -49,7 +49,9 @@ const CarouselTokens = ({ className }: { className?: string }) => {
                       </AvatarFallback>
                     </Avatar>
                     <CardDescription
-                      className={cn(isLoading && "animate-pulse blur-md")}
+                      className={cn(
+                        isLoading && "animate-pulse blur-md select-none"
+                      )}
                     >
                       {token.attributes.symbol}
                     </CardDescription>
@@ -57,7 +59,7 @@ const CarouselTokens = ({ className }: { className?: string }) => {
                   <span
                     className={cn(
                       "text-4xl font-semibold",
-                      isLoading && "animate-pulse blur-md"
+                      isLoading && "animate-pulse blur-md select-none"
                     )}
                   >
                     ${formatNumber(token.attributes.price_usd)}

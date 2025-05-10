@@ -17,6 +17,7 @@ import {
 } from "./ui/select";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { cn } from "@/lib/utils";
+import { useAccount } from "wagmi";
 
 const currencies = [
   { value: "ETH", label: "ETH" },
@@ -27,13 +28,14 @@ const currencies = [
 ];
 
 const WithdrawBox = () => {
+  const { address } = useAccount();
   const [currency, setCurrency] = React.useState(currencies[0].value);
   const [toMyWallet, setToMyWallet] = React.useState(true);
   return (
     <Card className="w-[520px] gap-">
       {/* TODO: remove width */}
       <CardHeader>
-        <CardTitle>Top up your accounts</CardTitle>
+        <CardTitle>Withdraw to your accounts</CardTitle>
         {/* <CardDescription>Top up your accounts</CardDescription> */}
       </CardHeader>
       <CardContent className="flex flex-col items-center">
@@ -76,9 +78,7 @@ const WithdrawBox = () => {
             <RadioGroupItem value="toMyWallet" id="my" />
             <div className="flex flex-col gap-2 items-start">
               <span>To my wallet:</span>
-              <span className="text-xs text-muted-foreground">
-                0x230cDe8909aeBBc48CfBDf6fCc9A642439d77F83
-              </span>
+              <span className="text-xs text-muted-foreground">{address}</span>
             </div>
           </Label>
           <Label

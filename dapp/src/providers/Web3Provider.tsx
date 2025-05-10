@@ -34,9 +34,8 @@ const queryClient = new QueryClient();
 const siweConfig: SIWEConfig = {
   getNonce: async () =>
     axios.get(`${baseApi}/siwe/nonce`).then((res) => res.data),
-  createMessage: ({ nonce, address, chainId }) => {
-    console.log(nonce, address, chainId);
-    return new SiweMessage({
+  createMessage: ({ nonce, address, chainId }) =>
+    new SiweMessage({
       version: "1",
       domain: window.location.host,
       uri: window.location.origin,
@@ -45,8 +44,7 @@ const siweConfig: SIWEConfig = {
       nonce,
       // Human-readable ASCII assertion that the user will sign, and it must not contain `\n`.
       statement: "Sign in With Ethereum.",
-    }).prepareMessage();
-  },
+    }).prepareMessage(),
   verifyMessage: async ({ message, signature }) =>
     axios
       .post(

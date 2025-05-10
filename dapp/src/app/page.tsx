@@ -9,6 +9,9 @@ import Banner from "@/components/Banner";
 import WithdrawBox from "@/components/WithdrawBox";
 import { ConnectKitButton } from "connectkit";
 import CarouselTokens from "@/components/CarouselTokens";
+import { useAccount } from "wagmi";
+import { getAddress } from "viem";
+import { useEffect } from "react";
 
 /**
  *
@@ -26,6 +29,13 @@ import CarouselTokens from "@/components/CarouselTokens";
  */
 
 export default function Home() {
+  const { isConnected } = useAccount();
+
+  useEffect(() => {
+    if (isConnected) {
+      // getAddress()
+    }
+  }, [isConnected]);
   return (
     <div className="px-4 py-6 w-full flex flex-col gap-4">
       <div className="flex justify-start h-[40px]">

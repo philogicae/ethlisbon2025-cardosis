@@ -18,3 +18,20 @@ export function formatNumber(value: string | number) {
     return amount.toFixed(2).toString(); // Less than 1K
   }
 }
+
+export function humanReadableDate(date: string | number | Date) {
+  const now = new Date();
+  const inputDate = new Date(date);
+  const diff = now.getTime() - inputDate.getTime();
+  const diffDays = Math.floor(diff / (1000 * 3600 * 24));
+
+  if (diffDays === 0) {
+    return `today ${inputDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  } else if (diffDays === 1) {
+    return "yesterday";
+  } else if (diffDays < 7) {
+    return `${diffDays} days ago`;
+  } else {
+    return inputDate.toLocaleDateString(); // Or format as desired
+  }
+}
