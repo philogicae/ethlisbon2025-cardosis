@@ -1,82 +1,22 @@
 import { Router } from "https://deno.land/x/oak/mod.ts";
+import { parseSiweMessage, type SiweMessage } from "npm:viem/siwe";
+import { publicClient } from "./rpc_client.ts";
 
-interface SiweMessageObject {
-	address?: string;
-	chainId?: number;
-	nonce?: string;
-	domain?: string;
-	uri?: string;
-	version?: string;
-	statement?: string;
-	issuedAt?: string;
-	expirationTime?: string;
-	notBefore?: string;
-	requestId?: string;
-	resources?: string[];
+interface UserSession {
+	address: `0x${string}`;
+	chainId: number;
 }
+
+const nonces = new Map<string, number>(); // nonce -> expirationTimestamp
+const NONCE_EXPIRATION_MS = 5 * 60 * 1000;
+const sessions = new Map<string, UserSession>(); // sessionId -> { address, chainId }
+const SESSION_COOKIE_NAME = "cardosis_session";
 
 function generateNonce(): string {
 	const arr = new Uint8Array(16);
 	crypto.getRandomValues(arr);
 	return Array.from(arr, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
-
-class SiweMessage {
-	address?: string;
-	chainId?: number;
-	nonce?: string;
-	constructor(public message: string | SiweMessageObject) {
-		if (typeof message === "string") {
-			this.nonce = message.match(/Nonce: (\S+)/)?.[1];
-		} else if (typeof message === "object") {
-			this.address = message.address;
-			this.chainId = message.chainId;
-			this.nonce = message.nonce;
-		}
-	}
-
-	verify({
-		signature,
-		expectedNonce,
-	}: { signature: string; expectedNonce?: string }): {
-		success: boolean;
-		data: SiweMessage;
-		error?: Error;
-	} {
-		if (
-			!this.address ||
-			!this.nonce ||
-			!signature ||
-			(expectedNonce && this.nonce !== expectedNonce)
-		) {
-			return {
-				success: false,
-				data: this,
-				error: new Error("Invalid message or nonce for verification."),
-			};
-		}
-		const looksValid =
-			/^0x[a-fA-F0-9]+$/.test(signature) && signature.length > 10;
-		if (looksValid) {
-			this.chainId = this.chainId || 1;
-			return { success: true, data: this };
-		}
-		return {
-			success: false,
-			data: this,
-			error: new Error("Signature verification failed."),
-		};
-	}
-}
-
-const nonces = new Map<string, number>(); // nonce -> expirationTimestamp
-const NONCE_EXPIRATION_MS = 5 * 60 * 1000;
-interface UserSession {
-	address: string;
-	chainId: number;
-}
-const sessions = new Map<string, UserSession>(); // sessionId -> { address, chainId }
-const SESSION_COOKIE_NAME = "cardosis_session";
 
 export const siweRouter = new Router();
 
@@ -103,10 +43,9 @@ siweRouter.post("/verify", async (ctx) => {
 		}
 
 		const payload = await ctx.request.body.json();
-
 		const { message, signature } = payload as {
-			message: string | SiweMessageObject;
-			signature: string;
+			message: string; // EIP-4361 message string
+			signature: `0x${string}`;
 		};
 
 		if (!message || !signature) {
@@ -115,40 +54,55 @@ siweRouter.post("/verify", async (ctx) => {
 			return;
 		}
 
-		const siweMessage = new SiweMessage(message);
-		if (!siweMessage.nonce) {
+		let parsedMessage: SiweMessage;
+		try {
+			parsedMessage = parseSiweMessage(message) as SiweMessage;
+		} catch (parseError) {
+			console.error("SIWE Message Parsing Error:", parseError);
 			ctx.response.status = 400;
-			ctx.response.body = { error: "Nonce missing in SIWE message." };
+			ctx.response.body = { error: "Invalid SIWE message format." };
 			return;
 		}
 
-		const storedNonceExpiry = nonces.get(siweMessage.nonce);
+		if (!parsedMessage.nonce) {
+			ctx.response.status = 400;
+			ctx.response.body = {
+				error: "Nonce missing or invalid in SIWE message.",
+			};
+			return;
+		}
+
+		const storedNonceExpiry = nonces.get(parsedMessage.nonce);
 		if (!storedNonceExpiry || Date.now() > storedNonceExpiry) {
-			if (storedNonceExpiry) nonces.delete(siweMessage.nonce);
+			if (storedNonceExpiry) nonces.delete(parsedMessage.nonce); // Clean up expired/invalid nonce
 			ctx.response.status = 403;
 			ctx.response.body = { error: "Nonce invalid or expired." };
 			return;
 		}
 
-		const {
-			success,
-			data: verifiedMessage,
-			error,
-		} = siweMessage.verify({
-			signature,
-			expectedNonce: siweMessage.nonce,
-		});
+		let isVerified = false;
+		try {
+			isVerified = await publicClient.verifySiweMessage({ message, signature });
+		} catch (verificationError) {
+			console.error("SIWE Verification Error (viem):", verificationError);
+			ctx.response.status = 401; // Unauthorized
+			ctx.response.body = {
+				ok: false,
+				error: "Signature verification failed due to an internal error.",
+			};
+			return;
+		}
 
 		if (
-			success &&
-			verifiedMessage.address &&
-			verifiedMessage.chainId !== undefined
+			isVerified &&
+			parsedMessage.address &&
+			parsedMessage.chainId !== undefined
 		) {
-			nonces.delete(siweMessage.nonce);
-			const sessionId = generateNonce(); // Uses the local generateNonce
+			nonces.delete(parsedMessage.nonce); // Nonce is successfully used, remove it
+			const sessionId = generateNonce();
 			sessions.set(sessionId, {
-				address: verifiedMessage.address,
-				chainId: verifiedMessage.chainId,
+				address: parsedMessage.address,
+				chainId: parsedMessage.chainId,
 			});
 			ctx.cookies.set(SESSION_COOKIE_NAME, sessionId, {
 				httpOnly: true,
@@ -159,14 +113,24 @@ siweRouter.post("/verify", async (ctx) => {
 			ctx.response.status = 200;
 			ctx.response.body = {
 				ok: true,
-				address: verifiedMessage.address,
-				chainId: verifiedMessage.chainId,
+				address: parsedMessage.address,
+				chainId: parsedMessage.chainId,
 			};
 		} else {
-			ctx.response.status = 401;
+			if (
+				isVerified &&
+				(!parsedMessage.address || parsedMessage.chainId === undefined)
+			) {
+				console.error(
+					"SIWE logic error: Verified, but address/chainId missing from parsed message.",
+					parsedMessage,
+				);
+			}
+			ctx.response.status = 401; // Unauthorized
 			ctx.response.body = {
 				ok: false,
-				error: error?.message || "Verification failed.",
+				error:
+					"Signature verification failed or required message fields missing.",
 			};
 		}
 	} catch (e) {
