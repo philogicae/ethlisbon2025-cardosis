@@ -1,5 +1,6 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
+import { siweRouter } from "./siwe.ts";
 import Database from "./db.ts";
 
 // Quick db test
@@ -10,7 +11,6 @@ db.close();
 
 const app = new Application();
 app.use(oakCors());
-const router = new Router();
 
 // Logger
 app.use(async (ctx, next) => {
@@ -29,19 +29,28 @@ app.use(async (ctx, next) => {
 	ctx.response.headers.set("X-Response-Time", `${ms}ms`);
 });
 
-// Router
-router
-	.get("/v1/get/:string", async (ctx) => {
-		const { string } = ctx.params;
-		ctx.response.body = { string };
+// Main API Router
+const apiRouter = new Router();
+
+// Mount SIWE routes
+apiRouter.use("/api/siwe", siweRouter.routes(), siweRouter.allowedMethods());
+
+// Define other API routes directly on apiRouter
+apiRouter
+	.get("/api", (ctx) => {
+		ctx.response.body = "API Root";
 	})
-	.post("/v1/post", async (ctx) => {
+	.get("/api/get/:text", (ctx) => {
+		const { text } = ctx.params;
+		ctx.response.body = { text };
+	})
+	.post("/api/post", async (ctx) => {
 		const { test } = await ctx.request.body.json();
 		ctx.response.body = { test, status: "ok" };
 	});
 
-app.use(router.routes());
-app.use(router.allowedMethods());
+app.use(apiRouter.routes());
+app.use(apiRouter.allowedMethods());
 
 console.log("Running on http://localhost:8000");
 await app.listen({ port: 8000 });
