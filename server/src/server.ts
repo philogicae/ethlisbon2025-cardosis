@@ -52,7 +52,7 @@ apiRouter.use("/api/siwe", siweRouter.routes(), siweRouter.allowedMethods());
 // Require sessionId
 apiRouter.use(async (ctx, next) => {
 	const { address, sessionId } = await ctx.request.body.json();
-	//const
+	// TODO: check validity of sessionId
 	if (!sessionId) {
 		ctx.response.status = 401;
 		ctx.response.body = { error: "Unauthorized" };
