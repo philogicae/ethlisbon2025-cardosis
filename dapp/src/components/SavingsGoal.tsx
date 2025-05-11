@@ -6,53 +6,53 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
 export function SavingsGoal({ className }: { className?: string }) {
-  const [goal, setGoal] = useState(30);
-  const min = 100;
-  const max = 1000;
-  const step = 10;
-  const bars = [50, 30, 40, 35, 50, 45, 30, 25, 40, 35, 50, 45]; // Example data
+	const [goal, setGoal] = useState(30);
+	const min = 5;
+	const max = 500;
+	const step = 5;
+	const bars = [50, 25, 40, 32, 50, 45, 30, 25, 40, 35, 50, 45]; // Example data
 
-  return (
-    <Card className={cn("bg-card flex flex-col items-center p-6", className)}>
-      <CardHeader className="w-full text-center pb-2">
-        <CardTitle className="text-white text-lg">Deposit Goal</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col items-center w-full gap-4">
-        <div className="flex items-center justify-center gap-8 my-2">
-          <button
-            className="rounded-full w-10 h-10 flex items-center justify-center text-2xl bg-muted/20 hover:bg-muted/30 transition"
-            onClick={() => setGoal((g) => Math.max(g - step, min))}
-            aria-label="Decrease goal"
-          >
-            –
-          </button>
-          <div className="flex flex-col items-center">
-            <span className="text-5xl font-bold text-white">{goal}</span>
-            <span className="uppercase tracking-widest text-xs text-muted-foreground">
-              €/day
-            </span>
-          </div>
-          <button
-            className="rounded-full w-10 h-10 flex items-center justify-center text-2xl bg-muted/20 hover:bg-muted/30 transition"
-            onClick={() => setGoal((g) => Math.min(g + step, max))}
-            aria-label="Increase goal"
-          >
-            +
-          </button>
-        </div>
-        <div className="flex items-end justify-center gap-1 h-16 w-full max-w-xs mx-auto">
-          {bars.map((v, i) => (
-            <div
-              key={i}
-              className="rounded bg-white/90"
-              style={{ width: 12, height: v }}
-            />
-          ))}
-        </div>
-        <Button className="mt-4 w-full bg-foreground text-background rounded-lg py-3 text-lg hover:bg-gray-100 transition">
-          Set Goal
-        </Button>
-      </CardContent>
-    </Card>
-  );
+	return (
+		<Card className={cn("flex flex-col items-center p-6 bg-card", className)}>
+			<CardHeader className="pb-2 w-full text-center">
+				<CardTitle className="text-lg text-white">Saving Goal</CardTitle>
+			</CardHeader>
+			<CardContent className="flex flex-col gap-4 items-center w-full">
+				<div className="flex gap-8 justify-center items-center my-2">
+					<button
+						className="flex justify-center items-center w-10 h-10 text-2xl rounded-full transition bg-muted/20 hover:bg-muted/30"
+						onClick={() => setGoal((g) => Math.max(g - step, min))}
+						aria-label="Decrease goal"
+					>
+						–
+					</button>
+					<div className="flex flex-col items-center">
+						<span className="text-5xl font-bold text-white">{goal}</span>
+						<span className="text-xs tracking-widest uppercase text-muted-foreground">
+							€ / week
+						</span>
+					</div>
+					<button
+						className="flex justify-center items-center w-10 h-10 text-2xl rounded-full transition bg-muted/20 hover:bg-muted/30"
+						onClick={() => setGoal((g) => Math.min(g + step, max))}
+						aria-label="Increase goal"
+					>
+						+
+					</button>
+				</div>
+				<div className="flex gap-1 justify-center items-end mx-auto w-full max-w-xs h-16">
+					{bars.map((v, i) => (
+						<div
+							key={i}
+							className="rounded bg-white/90"
+							style={{ width: 12, height: v }}
+						/>
+					))}
+				</div>
+				<Button className="py-3 mt-4 w-full text-lg rounded-lg transition bg-foreground text-background hover:bg-gray-100">
+					Set Goal
+				</Button>
+			</CardContent>
+		</Card>
+	);
 }
