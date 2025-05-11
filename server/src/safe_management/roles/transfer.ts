@@ -11,6 +11,8 @@ const formatBytes32String = (str: string) => {
 	);
 };
 
+export const transferRoleKey = formatBytes32String("transfer");
+
 export const transferRole = (
 	auth_wallet: `0x${string}`,
 	allowedTransferAddresses: `0x${string}`[],
@@ -20,7 +22,6 @@ export const transferRole = (
 	members: `0x${string}`[];
 	permissions: (zodiacRolesSdk.Permission | zodiacRolesSdk.PermissionSet)[];
 } => {
-	const transferRoleKey = formatBytes32String("transfer");
 	const nativeTransferPermissions = allowedTransferAddresses.map((address) => {
 		return { targetAddress: address, send: true } as zodiacRolesSdk.Permission;
 	});

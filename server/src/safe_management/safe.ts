@@ -1,16 +1,21 @@
 import "jsr:@std/dotenv/load";
+import Database from "../db.ts";
 import { sepolia, gnosis } from "npm:viem/chains";
 import { privateKeyToAccount } from "npm:viem/accounts";
+import { publicClient } from "../rpc_client.ts";
 import {
 	createSafeClient,
 	type SafeClient,
 } from "npm:@safe-global/sdk-starter-kit";
-import { publicClient } from "../rpc_client.ts";
-import { getContract, encodeFunctionData } from "npm:viem";
 import * as zodiacRolesSdk from "https://esm.sh/zodiac-roles-sdk@2.22.2";
-import { transferRole } from "./roles/transfer.ts";
-import { role_modifier_abi, erc20_abi } from "./roles/abis.ts";
+import { transferRole, transferRoleKey } from "./roles/transfer.ts";
 import { allowedTokenContracts } from "./roles/allowances.ts";
+import { getContract, encodeFunctionData } from "npm:viem";
+import { role_modifier_abi, erc20_abi } from "./abis.ts";
+import { tokenList } from "./tokens.ts";
+
+// Singletons
+const db = Database.getInstance();
 
 class SafeManager {
 	private static instance: SafeManager;
@@ -199,6 +204,109 @@ class SafeManager {
 			dca: dcaSafeAddress,
 			reserve: reserveSafeAddress,
 		};
+	}
+
+	private async getRoleModifierContract(
+		ownerAddress: `0x${string}`,
+		chainId: number,
+		safe: string,
+	) {
+		// Check addresses
+		if (!["card", "dca", "reserve"].includes(safe)) {
+			throw new Error("Invalid 'safe' address");
+		}
+		// deno-lint-ignore no-explicit-any
+		const account: any = db.getAccount(ownerAddress, chainId) || {};
+		if (!account) {
+			throw new Error("Account not found");
+		}
+		const safeAddress = account[safe];
+		if (!safeAddress) {
+			throw new Error("Safe not found");
+		}
+
+		// Load SafeClient
+		const safeClientDeployed = await createSafeClient({
+			provider: this.providers[chainId],
+			signer: this.signer,
+			safeAddress,
+		});
+
+		// Get external signer from SafeClient
+		const externalSignerDeployed = await safeClientDeployed.protocolKit
+			.getSafeProvider()
+			.getExternalSigner();
+		if (!externalSignerDeployed) {
+			throw new Error("Missing external signer");
+		}
+
+		// Get role modifier contract for this safe
+		const role_modifier_addr = (
+			await safeClientDeployed.protocolKit.getModules()
+		)[0];
+		const role_modifier = getContract({
+			address: role_modifier_addr,
+			abi: role_modifier_abi,
+			client: externalSignerDeployed,
+		});
+		return role_modifier;
+	}
+
+	async transferTokens(
+		ownerAddress: `0x${string}`,
+		chainId: number,
+		from: string,
+		to: string,
+		token: string,
+		amount: bigint,
+	) {
+		if (!["card", "dca", "reserve"].includes(from)) {
+			throw new Error("Invalid 'from' address");
+		}
+		// Check addresses
+		// deno-lint-ignore no-explicit-any
+		const account: any = db.getAccount(ownerAddress, chainId) || {};
+		if (!account) {
+			throw new Error("Account not found");
+		}
+		const fromAddress = account[from] as `0x${string}`;
+		account.gnosispay = this.auth_address;
+		const toAddress = account[to] as `0x${string}` | undefined;
+		if (!toAddress) {
+			throw new Error("Invalid 'to' address");
+		}
+
+		// Get role modifier contract
+		const role_modifier = await this.getRoleModifierContract(
+			ownerAddress,
+			chainId,
+			fromAddress,
+		);
+
+		// Encode transfer calldata
+		const transfer_calldata = encodeFunctionData({
+			abi: erc20_abi,
+			functionName: "transfer",
+			args: [toAddress, amount],
+		});
+
+		// Execute transfer
+		const tokenAddress = tokenList[chainId][token];
+		const tx_hash = await role_modifier.write.execTransactionWithRole([
+			tokenAddress,
+			0n, // value
+			transfer_calldata,
+			0, // operation: 0 = call
+			transferRoleKey,
+			true, // shouldRevert
+		]);
+		console.log(`Tx transfer: ${tx_hash}`);
+
+		// Wait for transaction to be confirmed
+		await publicClient[chainId].waitForTransactionReceipt({
+			hash: tx_hash,
+			confirmations: 1,
+		});
 	}
 }
 

@@ -327,6 +327,31 @@ apiRouter
 				},
 			],
 		};
+	})
+	.post("/api/mock/spend", async (ctx) => {
+		const { address, chainId, amount } = await ctx.request.body.json();
+		try {
+			safeManager.transferTokens(
+				address,
+				chainId,
+				"card",
+				"gnosispay",
+				"EURe",
+				amount,
+			);
+		} catch (error) {
+			console.error("Failed to initiate mock spend:", error);
+			ctx.response.status = 500;
+			ctx.response.body = {
+				status: "error",
+				message: "Failed to initiate mock spend",
+			};
+			return;
+		}
+		ctx.response.body = {
+			status: "ok",
+			message: "Mock spending initiated",
+		};
 	});
 
 app.use(apiRouter.routes());
