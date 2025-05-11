@@ -51,11 +51,23 @@ apiRouter.use("/api/siwe", siweRouter.routes(), siweRouter.allowedMethods());
 
 // Require sessionId
 apiRouter.use(async (ctx, next) => {
-	const { address, sessionId } = await ctx.request.body.json();
-	// TODO: check validity of sessionId
-	if (!sessionId) {
+	const { address, chainId, sessionId } = await ctx.request.body.json();
+	// deno-lint-ignore no-explicit-any
+	const session = sessionId ? (db.getSession(sessionId) as any) : null;
+	if (
+		!session ||
+		session?.address !== address ||
+		session?.chainId !== chainId
+	) {
+		session && db.removeSession(sessionId);
 		ctx.response.status = 401;
 		ctx.response.body = { error: "Unauthorized" };
+		return;
+	}
+	if (session.expiration < Date.now()) {
+		session && db.removeSession(sessionId);
+		ctx.response.status = 401;
+		ctx.response.body = { error: "Session expired" };
 		return;
 	}
 	await next();
@@ -63,9 +75,9 @@ apiRouter.use(async (ctx, next) => {
 
 apiRouter
 	.post("/api/account", async (ctx) => {
-		const { address, sessionId } = await ctx.request.body.json();
+		const { address, chainId } = await ctx.request.body.json();
 		// deno-lint-ignore no-explicit-any
-		const account: any = db.getAccount(address, 11155111);
+		const account: any = db.getAccount(address, chainId);
 		ctx.response.body = {
 			status: account?.status || "not_found",
 			safes: {
@@ -76,18 +88,18 @@ apiRouter
 		};
 	})
 	.post("/api/account/create", async (ctx) => {
-		const { address, sessionId } = await ctx.request.body.json();
+		const { address, chainId } = await ctx.request.body.json();
 		// deno-lint-ignore no-explicit-any
-		const account: any = db.getAccount(address, 11155111);
+		const account: any = db.getAccount(address, chainId);
 		if (!account) {
 			try {
-				db.addAccount(address, 11155111, "", "", "", "creating");
+				db.addAccount(address, chainId, "", "", "", "creating");
 				safeManager
-					.createAccount(address, 11155111) // Sepolia chain ID
+					.createAccount(address, chainId)
 					.then((safes) => {
 						db.updateAccount(
 							address,
-							11155111,
+							chainId,
 							safes.card,
 							safes.dca,
 							safes.reserve,
@@ -96,7 +108,7 @@ apiRouter
 						console.log(`Account creation completed for ${address}`, safes);
 					})
 					.catch((error) => {
-						db.removeAccount(address, 11155111);
+						db.removeAccount(address, chainId);
 						console.error(`Account creation failed for ${address}:`, error);
 					});
 				ctx.response.body = {
@@ -105,7 +117,7 @@ apiRouter
 						"Account creation has started and will continue in the background",
 				};
 			} catch (error) {
-				db.removeAccount(address, 11155111);
+				db.removeAccount(address, chainId);
 				console.error("Failed to initiate account creation:", error);
 				ctx.response.body = {
 					status: "error",
@@ -125,7 +137,7 @@ apiRouter
 		}
 	})
 	.post("/api/account/balances", async (ctx) => {
-		const { address, sessionId } = await ctx.request.body.json();
+		const { address, chainId } = await ctx.request.body.json();
 		ctx.response.body = {
 			status: "ok",
 			balances: {
@@ -137,7 +149,7 @@ apiRouter
 		};
 	})
 	.post("/api/account/charts", async (ctx) => {
-		const { address, sessionId } = await ctx.request.body.json();
+		const { address, chainId } = await ctx.request.body.json();
 		ctx.response.body = {
 			status: "ok",
 			charts: [
@@ -165,7 +177,7 @@ apiRouter
 		};
 	})
 	.post("/api/account/transactions", async (ctx) => {
-		const { address, sessionId } = await ctx.request.body.json();
+		const { address, chainId } = await ctx.request.body.json();
 		const timestamp = Date.now();
 		ctx.response.body = {
 			status: "ok",
