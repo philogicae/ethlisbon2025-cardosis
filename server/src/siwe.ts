@@ -85,7 +85,10 @@ siweRouter.post("/verify", async (ctx) => {
 
 		let isVerified = false;
 		try {
-			isVerified = await publicClient.verifySiweMessage({ message, signature });
+			isVerified = await publicClient[parsedMessage.chainId].verifySiweMessage({
+				message,
+				signature,
+			});
 		} catch (verificationError) {
 			console.error("SIWE Verification Error (viem):", verificationError);
 			ctx.response.status = 401; // Unauthorized

@@ -2,16 +2,11 @@ import "jsr:@std/dotenv/load";
 import { sepolia, gnosis } from "npm:viem/chains";
 import { privateKeyToAccount } from "npm:viem/accounts";
 import {
-	createPublicClient,
-	http,
-	getContract,
-	encodeFunctionData,
-	type PublicClient,
-} from "npm:viem";
-import {
 	createSafeClient,
 	type SafeClient,
 } from "npm:@safe-global/sdk-starter-kit";
+import { publicClient } from "../rpc_client.ts";
+import { getContract, encodeFunctionData } from "npm:viem";
 import * as zodiacRolesSdk from "https://esm.sh/zodiac-roles-sdk@2.22.2";
 import { transferRole } from "./roles/transfer.ts";
 import { role_modifier_abi, erc20_abi } from "./roles/abis.ts";
@@ -20,7 +15,6 @@ import { allowedTokenContracts } from "./roles/allowances.ts";
 class SafeManager {
 	private static instance: SafeManager;
 	private providers: Record<number, string>;
-	private clients: Record<number, PublicClient>;
 	private signer: string;
 	private auth_address: `0x${string}`;
 
@@ -44,22 +38,9 @@ class SafeManager {
 		this.auth_address = privateKeyToAccount(signer as `0x${string}`)
 			.address as `0x${string}`;
 		console.log(`Auth wallet: ${this.auth_address}`);
-		this.clients = {
-			[sepolia.id]: createPublicClient({
-				chain: sepolia,
-				transport: http(),
-			}),
-			[gnosis.id]: createPublicClient({
-				chain: gnosis,
-				transport: http(),
-			}),
-		};
 	}
 
-	private async createSafe(
-		ownerAddress: `0x${string}`,
-		chainId: number,
-	): Promise<`0x${string}`> {
+	private async createSafe(chainId: number): Promise<`0x${string}`> {
 		// Prepare SafeClient
 		const safeClient: SafeClient = await createSafeClient({
 			provider: this.providers[chainId],
@@ -88,11 +69,11 @@ class SafeManager {
 			to: deploymentTx.to,
 			value: BigInt(deploymentTx.value),
 			data: deploymentTx.data as `0x${string}`,
-			chain: this.clients[chainId].chain,
+			chain: publicClient[chainId].chain,
 		});
 
 		// Wait for deployment transaction to be confirmed
-		await this.clients[chainId].waitForTransactionReceipt({
+		await publicClient[chainId].waitForTransactionReceipt({
 			hash: deploymentTxHash,
 			confirmations: 1,
 		});
@@ -148,7 +129,7 @@ class SafeManager {
 		console.log(`Tx setup roles: ${moduleTxHash}`);
 
 		// Wait for transaction to be confirmed
-		await this.clients[chainId].waitForTransactionReceipt({
+		await publicClient[chainId].waitForTransactionReceipt({
 			hash: moduleTxHash,
 			confirmations: 1,
 		});
@@ -179,7 +160,7 @@ class SafeManager {
 		console.log(`Tx change owner: ${changeOwnerTxHash}`);
 
 		// Wait for transaction to be confirmed
-		await this.clients[chainId].waitForTransactionReceipt({
+		await publicClient[chainId].waitForTransactionReceipt({
 			hash: changeOwnerTxHash,
 			confirmations: 1,
 		});
@@ -189,7 +170,7 @@ class SafeManager {
 		ownerAddress: `0x${string}`,
 		chainId: number,
 	): Promise<`0x${string}`> {
-		const safeAddress = await this.createSafe(ownerAddress, chainId);
+		const safeAddress = await this.createSafe(chainId);
 		await this.addRolesToSafe(ownerAddress, chainId, safeAddress);
 		await this.transferSafeOwnership(ownerAddress, chainId, safeAddress);
 		return safeAddress;

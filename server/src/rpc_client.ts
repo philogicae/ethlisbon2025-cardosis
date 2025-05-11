@@ -1,7 +1,13 @@
-import { createPublicClient, http } from "npm:viem";
-import { sepolia } from "npm:viem/chains";
+import { createPublicClient, http, type PublicClient } from "npm:viem";
+import { sepolia, gnosis } from "npm:viem/chains";
 
-export const publicClient = createPublicClient({
-	chain: sepolia,
-	transport: http(),
-});
+export const publicClient: Record<number, PublicClient> = {
+	[sepolia.id]: createPublicClient({
+		chain: sepolia,
+		transport: http(),
+	}),
+	[gnosis.id]: createPublicClient({
+		chain: gnosis,
+		transport: http(),
+	}),
+};
