@@ -10,10 +10,23 @@ import WithdrawBox from "@/components/WithdrawBox";
 import { ConnectKitButton } from "connectkit";
 import CarouselTokens from "@/components/CarouselTokens";
 import { useAccount } from "wagmi";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGetBalances } from "@/hooks/api/useGetBalances";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogHeader,
+//   DialogTitle,
+// } from "@/components/ui/dialog";
+// import { Progress } from "@/components/ui/progress";
+// import { ContainerTextFlip } from "@/components/ui/animations/TextFlip";
+import {
+  createAccount,
+  usePrepareAccount,
+} from "@/hooks/api/usePrepareAccount";
 
 /**
  *
@@ -32,16 +45,39 @@ export default function Home() {
   const { isConnected, address } = useAccount();
 
   const isTablet = useIsMobile(1160);
-  const isMobile = useIsMobile(890);
+  // const isMobile = useIsMobile(890);
 
   const { isLoading, data: balances } = useGetBalances(address);
+  const { data: accountPrepared } = usePrepareAccount(address);
   const isLoadingBalances = !address || isLoading;
 
+  const [creationProgress, setCreationProgress] = useState("");
+
   useEffect(() => {
-    if (isConnected) {
-      // getAddress()
+    console.log("accountPrepared", address, accountPrepared);
+    if (!address) return;
+    if (accountPrepared === "not_found") {
+      setTimeout(() => {
+        createAccount(address).then((status) => {
+          if (status === "created") {
+            // Clear the interval when status is "created"
+            const checkStatusInterval = setInterval(() => {
+              createAccount(address).then((status) => {
+                if (status === "done") {
+                  clearInterval(checkStatusInterval);
+                }
+                if (status === "creating") {
+                  setCreationProgress("created");
+                  console.log(creationProgress);
+                }
+              });
+            }, 3000);
+          }
+        });
+      }, 1000);
     }
-  }, [isConnected]);
+  }, [isConnected, address, accountPrepared, creationProgress]);
+
   return (
     <div className="px-4 py-6 w-full flex flex-col gap-4">
       <div className="flex justify-start h-[40px]">
@@ -51,7 +87,7 @@ export default function Home() {
           }}
         />
       </div>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(340px,1fr))] auto-rows-auto gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(340px,1fr))] gap-4">
         <NumberBlock
           className="h-fit row-span-1"
           description="Card account balance"
@@ -89,6 +125,25 @@ export default function Home() {
           <SavingsGoal className="h-fit w-full col-start-3" />
         </div>
       </div>
+      {/* <Dialog open>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hold on, we are preparing everything</DialogTitle>
+            <DialogDescription>
+              This action cannot be skipped.
+            </DialogDescription>
+          </DialogHeader>
+          <ContainerTextFlip
+            words={[
+              "Preparing...",
+              "Creating safe account...",
+              "Creating AAVE",
+            ]}
+            className="text-card-foreground"
+          />
+          <Progress value={50} />
+        </DialogContent>
+      </Dialog> */}
     </div>
   );
 }

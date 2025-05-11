@@ -1,6 +1,7 @@
 import axios from "axios";
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
+import { SIWE_SESSION_ID } from "@/constants/storage";
 
 export type Transaction = {
   details: {
@@ -20,8 +21,9 @@ const fetchTransactionsList = async (
   addr: string | undefined
 ): Promise<Transaction[]> => {
   if (!addr) return [];
+  const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
   const response = await axios
-    .post(`${baseApi}/account/transactions`, { address: addr })
+    .post(`${baseApi}/account/transactions`, { address: addr, sessionId })
     .then((res) => res.data);
   return response.transactions;
 };

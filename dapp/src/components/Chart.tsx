@@ -1,5 +1,4 @@
 "use client";
-import { TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -72,7 +71,7 @@ export function Chart({ className }: { className?: string }) {
       // If stacked chart, we need the sum of values
       const stackSum = chart.card + chart.reserve + chart.dca;
       // If not stacked, we need the largest individual value
-      const individualMax = Math.max(chart.card, chart.reserve, chart.dca);
+      // const individualMax = Math.max(chart.card, chart.reserve, chart.dca);
 
       // Use stackSum for stacked charts, individualMax otherwise
       const currentMax = stackSum; // Change to individualMax if not using stackId in Areas
@@ -194,15 +193,7 @@ export function Chart({ className }: { className?: string }) {
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        {/* TODO: Add tons of description */}
-        <div className="flex gap-2 font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="text-muted-foreground">
-          Showing progress for the last {6} months
-        </div>
-      </CardFooter>
+      <CardFooter className="flex-col items-start gap-2 text-sm"></CardFooter>
     </Card>
   );
 }
