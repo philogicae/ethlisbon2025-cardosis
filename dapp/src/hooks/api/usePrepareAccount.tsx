@@ -17,36 +17,41 @@ import { SIWE_SESSION_ID } from "@/constants/storage";
 //   id: number;
 // };
 
-const checkAccount = async (addr: string): Promise<unknown> => {
-  const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
+const checkAccount = async (
+  addr?: string,
+  sessionId?: string,
+  chainId?: number
+): Promise<{
+  status: string;
+  safes: { card: string; dca: string; reserve: string };
+}> => {
   const response = await axios
-    .post(`${baseApi}/account`, { address: addr, sessionId })
+    .post(`${baseApi}/account`, { address: addr, sessionId, chainId })
+    .then((res) => res.data);
+
+  return response;
+};
+
+const createAccount = async (
+  addr?: string,
+  sessionId?: string,
+  chainId?: number
+): Promise<{ status: string }> => {
+  const response = await axios
+    .post(`${baseApi}/account/create`, { address: addr, sessionId, chainId })
     .then((res) => res.data);
 
   return response.data.status;
 };
 
-const createAccount = async (addr: string): Promise<unknown> => {
-  const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
-  const response = await axios
-    .post(`${baseApi}/account/create`, { address: addr, sessionId })
-    .then((res) => res.data);
-
-  return response.data.status;
-};
-
-// const fetchStatus = async (addr: string): Promise<any> => {
-//   const response = await axios
-//     .post(`${baseApi}/account/create/status`, { address: addr })
-//     .then((res) => res.data);
-
-//   return response.data;
-// };
-
-const usePrepareAccount = (addr: string | undefined) => {
+const usePrepareAccount = (
+  addr?: string,
+  sessionId?: string,
+  chainId?: number
+) => {
   return useQuery({
     queryKey: ["prepare-account", addr],
-    queryFn: () => checkAccount(addr!),
+    queryFn: () => checkAccount(addr, sessionId, chainId),
     enabled: !!addr,
   });
 };

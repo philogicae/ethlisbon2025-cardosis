@@ -11,7 +11,7 @@
 import {
   Home,
   // PiggyBank,
-  Search,
+  CreditCard,
   Settings,
   Wallet,
 } from "lucide-react";
@@ -20,7 +20,7 @@ import { FloatingDock } from "./ui/animations/FloatingDock";
 const items = [
   {
     title: "Dashboard",
-    href: "#",
+    href: "/",
     icon: <Home />,
   },
   {
@@ -29,9 +29,9 @@ const items = [
     icon: <Wallet />,
   },
   {
-    title: "Search",
-    href: "#",
-    icon: <Search />,
+    title: "Pay",
+    href: "/pay",
+    icon: <CreditCard />,
   },
   {
     title: "Settings",

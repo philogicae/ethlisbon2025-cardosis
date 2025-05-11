@@ -10,20 +10,21 @@ export type ChartStamp = {
   reserve: number;
 };
 
-const fetchCharts = async (addr: string | undefined): Promise<ChartStamp[]> => {
-  if (!addr) return [];
-  const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
+const fetchCharts = async (addr: string | undefined, chainId?: number): Promise<ChartStamp[]> => {
+  if (!addr || !chainId) return [];
+  const sessionId = localStorage.getItem(SIWE_SESSION_ID);
   const response = await axios
-    .post(`${baseApi}/account/charts`, { address: addr, sessionId })
+    .post(`${baseApi}/account/charts`, { address: addr, sessionId, chainId })
     .then((res) => res.data);
-  return response.charts;
+  return response.charts; 
 };
 
-const useGetCharts = (addr: string | undefined) => {
+const useGetCharts = (addr: string | undefined, chainId?: number) => {
   return useQuery({
-    queryKey: ["charts", addr],
-    queryFn: () => fetchCharts(addr),
-    enabled: !!addr,
+    queryKey: ["charts", addr, chainId],
+    queryFn: () => fetchCharts(addr, chainId),
+    enabled: !!addr && !!chainId,
+    refetchOnWindowFocus: false,  // Don't refetch when window focuses
   });
 };
 

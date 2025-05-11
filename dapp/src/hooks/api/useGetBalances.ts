@@ -1,7 +1,6 @@
 import axios from "axios";
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
-import { SIWE_SESSION_ID } from "@/constants/storage";
 
 export type Balance = {
   card: number | null;
@@ -10,20 +9,20 @@ export type Balance = {
   reserve: number | null;
 };
 
-const fetchBalances = async (addr: string | undefined): Promise<Balance> => {
-  const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
+const fetchBalances = async (addr?: string, sessionId?: string, chainId?: number): Promise<Balance> => {
+  if (!addr || !sessionId || !chainId) return {card: null, dca_current: null, dca_total: null, reserve: null};
   const response = await axios
-    .post(`${baseApi}/account/balances`, { address: addr, sessionId })
+    .post(`${baseApi}/account/balances`, { address: addr, sessionId, chainId })
     .then((res) => res.data);
 
   return response.balances;
 };
 
-const useGetBalances = (searchValue: string | undefined) => {
+const useGetBalances = (searchValue?: string, sessionId?: string , chainId?: number) => {
   return useQuery({
     queryKey: ["balances", searchValue],
-    queryFn: () => fetchBalances(searchValue),
-    enabled: !!searchValue,
+    queryFn: () => fetchBalances(searchValue, sessionId, chainId),
+    enabled: !!searchValue && !!sessionId && !!chainId,
   });
 };
 

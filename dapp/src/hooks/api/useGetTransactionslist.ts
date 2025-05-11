@@ -18,21 +18,23 @@ export type Transaction = {
 };
 
 const fetchTransactionsList = async (
-  addr: string | undefined
+  addr?: string,
+  chainId?: number
 ): Promise<Transaction[]> => {
-  if (!addr) return [];
-  const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
+  if (!addr || !chainId) return [];
+  const sessionId = localStorage.getItem(SIWE_SESSION_ID);
   const response = await axios
-    .post(`${baseApi}/account/transactions`, { address: addr, sessionId })
+    .post(`${baseApi}/account/transactions`, { address: addr, sessionId, chainId })
     .then((res) => res.data);
   return response.transactions;
 };
 
-const useGetTransactionsList = (addr: string | undefined) => {
+const useGetTransactionsList = (addr?: string, chainId?: number) => {
   return useQuery({
-    queryKey: ["transactions", addr],
-    queryFn: () => fetchTransactionsList(addr),
-    enabled: !!addr,
+    queryKey: ["transactions", addr, chainId],
+    queryFn: () => fetchTransactionsList(addr, chainId),
+    enabled: !!addr && !!chainId,
+    refetchOnWindowFocus: false,  // Don't refetch when window focuses
   });
 };
 

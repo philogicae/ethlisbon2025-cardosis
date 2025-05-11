@@ -15,11 +15,13 @@ const NumberBlock = ({
   value,
   className,
   isLoading,
+  address,
 }: {
   description: string;
   value: number;
   className?: string;
   isLoading?: boolean;
+  address?: string;
 }) => {
   return (
     <Card className={cn(className, "gap-2")}>
@@ -55,8 +57,13 @@ const NumberBlock = ({
         <div className="line-clamp-1 flex gap-2 font-medium">
           Trending up this month <TrendingUpIcon className="size-4" />
         </div>
-        <div className="text-muted-foreground">
-          Visitors for the last 6 months
+        <div
+          className={cn(
+            "text-muted-foreground truncate max-w-full",
+            isLoading && "animate-pulse blur-md select-none"
+          )}
+        >
+          {address}
         </div>
       </CardFooter>
     </Card>

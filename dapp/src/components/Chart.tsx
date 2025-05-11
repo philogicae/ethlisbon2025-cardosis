@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useGetCharts } from "@/hooks/api/useGetCharts";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
+import { SIWE_SESSION_ID } from "@/constants/storage";
 
 const chartConfig = {
   card: {
@@ -51,12 +52,17 @@ const loadingData = [
 ];
 
 export function Chart({ className }: { className?: string }) {
-  const { address } = useAccount();
-  const { data: charts, isLoading } = useGetCharts(address);
-  const isLoadingCharts = isLoading || !address;
+  const { address, chainId } = useAccount();
+
+  const { data: charts, isLoading, isError } = useGetCharts(address, chainId);
+
+  const isLoadingCharts = isLoading || !address || isError;
   // State to store the maximum value found in chart data
   const [maxValue, setMaxValue] = useState<number>(0);
 
+  useEffect(() => {
+    console.log("charts INIT");
+  }, []);
   useEffect(() => {
     if (!charts?.length) return;
 

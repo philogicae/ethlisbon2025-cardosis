@@ -19,6 +19,7 @@ import {
   MoveRight,
   PiggyBank,
 } from "lucide-react";
+import { SIWE_SESSION_ID } from "@/constants/storage";
 
 const mockTransactions = [
   {
@@ -111,10 +112,14 @@ export function RecentTransactions({
   className?: string;
   isMobile: boolean;
 }) {
-  const { address } = useAccount();
-  const { isLoading: isLoadingTransactions, data: transactions } =
-    useGetTransactionsList(address);
-  const isLoading = isLoadingTransactions || !address;
+  const { address, chainId } = useAccount();
+  const {
+    isLoading: isLoadingTransactions,
+    data: transactions,
+    isError,
+  } = useGetTransactionsList(address, chainId);
+  const isLoading = isLoadingTransactions || !address || isError;
+
   return (
     <Card className={cn(className)}>
       <CardHeader>

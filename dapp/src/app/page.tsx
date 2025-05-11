@@ -27,6 +27,7 @@ import {
   createAccount,
   usePrepareAccount,
 } from "@/hooks/api/usePrepareAccount";
+import { SIWE_SESSION_ID } from "@/constants/storage";
 
 /**
  *
@@ -42,42 +43,48 @@ import {
  */
 
 export default function Home() {
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, chainId } = useAccount();
 
   const isTablet = useIsMobile(1160);
   // const isMobile = useIsMobile(890);
 
-  const { isLoading, data: balances } = useGetBalances(address);
-  const { data: accountPrepared } = usePrepareAccount(address);
-  const isLoadingBalances = !address || isLoading;
+  const sessionId = localStorage.getItem(SIWE_SESSION_ID);
+  const {
+    isLoading,
+    data: balances,
+    isError,
+  } = useGetBalances(address, sessionId || "", chainId);
+
+  const { data: accountPrepared } = usePrepareAccount(
+    address,
+    sessionId || "",
+    chainId
+  );
+  const isLoadingBalances = !address || isLoading || isError;
 
   const [creationProgress, setCreationProgress] = useState("");
 
   useEffect(() => {
     console.log("accountPrepared", address, accountPrepared);
     if (!address) return;
-    if (accountPrepared === "not_found") {
-      setTimeout(() => {
-        createAccount(address).then((status) => {
-          if (status === "created") {
-            // Clear the interval when status is "created"
-            const checkStatusInterval = setInterval(() => {
-              createAccount(address).then((status) => {
-                if (status === "done") {
-                  clearInterval(checkStatusInterval);
-                }
-                if (status === "creating") {
-                  setCreationProgress("created");
-                  console.log(creationProgress);
-                }
-              });
-            }, 3000);
+    if (
+      accountPrepared?.status === "not_found" ||
+      accountPrepared?.status === "creating"
+    ) {
+      const checkStatusInterval = setInterval(() => {
+        createAccount(address!, sessionId || "", chainId || 1).then((data) => {
+          console.log(data.status);
+          if (data.status === "done" || data.status === "error") {
+            clearInterval(checkStatusInterval);
+          }
+          if (data.status === "done") {
+            setCreationProgress("done");
           }
         });
-      }, 1000);
+      }, 3000);
     }
   }, [isConnected, address, accountPrepared, creationProgress]);
-
+  console.log(accountPrepared);
   return (
     <div className="px-4 py-6 w-full flex flex-col gap-4">
       <div className="flex justify-start h-[40px]">
@@ -93,18 +100,21 @@ export default function Home() {
           description="Card account balance"
           value={balances?.card || 0}
           isLoading={isLoadingBalances}
+          address={accountPrepared?.safes?.card}
         />
         <NumberBlock
           className="h-fit row-span-1"
           description="DCA account balance"
           value={balances?.dca_current || 0}
           isLoading={isLoadingBalances}
+          address={accountPrepared?.safes?.dca}
         />
         <NumberBlock
           className="min-[1160px]:h-fit row-span-1"
           description="Total Saved Funds"
           value={balances?.dca_total || 0}
           isLoading={isLoadingBalances}
+          address={accountPrepared?.safes?.reserve}
         />
         <RecentTransactions
           isMobile={isTablet}
