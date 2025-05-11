@@ -10,7 +10,7 @@ const Pay = () => {
   const { address, chainId } = useAccount();
   const { mutate, data } = useMockPayMutation();
   const { isLoading, isError } = useMockPay(address, chainId);
-  console.log(data);
+
   return (
     <div className="my-8 mx-4">
       <ConnectKitButton />
