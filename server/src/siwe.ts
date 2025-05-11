@@ -1,15 +1,19 @@
 import { Router } from "https://deno.land/x/oak/mod.ts";
 import { parseSiweMessage, type SiweMessage } from "npm:viem/siwe";
 import { publicClient } from "./rpc_client.ts";
+import Database from "./db.ts";
+
+// Singletons
+const db = Database.getInstance();
 
 interface UserSession {
 	address: `0x${string}`;
 	chainId: number;
+	expiration: number;
 }
 
 const nonces = new Map<string, number>(); // nonce -> expirationTimestamp
 const NONCE_EXPIRATION_MS = 10 * 60 * 1000;
-const sessions = new Map<string, UserSession>(); // sessionId -> { address, chainId }
 
 function generateNonce(): string {
 	const arr = new Uint8Array(16);
@@ -95,20 +99,26 @@ siweRouter.post("/verify", async (ctx) => {
 		if (
 			isVerified &&
 			parsedMessage.address &&
-			parsedMessage.chainId !== undefined
+			parsedMessage.chainId &&
+			parsedMessage.nonce
 		) {
 			nonces.delete(parsedMessage.nonce); // Nonce is successfully used, remove it
 			const sessionId = generateNonce();
-			sessions.set(sessionId, {
-				address: parsedMessage.address,
-				chainId: parsedMessage.chainId,
-			});
+			const expiration =
+				nonces.get(parsedMessage.nonce) || Date.now() + NONCE_EXPIRATION_MS;
+			db.addSession(
+				sessionId,
+				parsedMessage.address,
+				parsedMessage.chainId,
+				expiration,
+			);
 			ctx.response.status = 200;
 			ctx.response.body = {
 				ok: true,
+				sessionId,
 				address: parsedMessage.address,
 				chainId: parsedMessage.chainId,
-				sessionId,
+				expiration,
 			};
 		} else {
 			if (
@@ -137,16 +147,21 @@ siweRouter.post("/verify", async (ctx) => {
 // 3. Get Session
 siweRouter.post("/session", async (ctx) => {
 	const { sessionId } = await ctx.request.body.json();
-	const sessionData = sessionId ? sessions.get(sessionId) : null;
+	const sessionData = sessionId ? db.getSession(sessionId) : null;
+	if (!sessionData) {
+		ctx.response.status = 401;
+		ctx.response.body = { error: "Session not found." };
+		return;
+	}
 	ctx.response.status = 200;
-	ctx.response.body = sessionData; // Returns { address, chainId } or null
+	ctx.response.body = sessionData;
 });
 
 // 4. Logout
 siweRouter.post("/logout", async (ctx) => {
 	const { sessionId } = await ctx.request.body.json();
 	if (sessionId) {
-		sessions.delete(sessionId);
+		db.removeSession(sessionId);
 	}
 	ctx.response.status = 200;
 	ctx.response.body = { ok: true };

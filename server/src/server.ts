@@ -4,17 +4,14 @@ import { siweRouter } from "./siwe.ts";
 import Database from "./db.ts";
 import SafeManager from "./safe_management/safe.ts";
 
-// Quick db test
-const db = new Database();
-const rows = db.getAllPeople();
-console.log(rows);
-db.close();
+// Singletons
+const db = Database.getInstance();
+const safeManager = SafeManager.getInstance();
 
-// Safe manager
-const safeManager = new SafeManager();
-
+// App
 const app = new Application();
 
+// CORS
 app.use(
 	oakCors({
 		origin: [
@@ -52,7 +49,18 @@ const apiRouter = new Router();
 // Mount SIWE routes
 apiRouter.use("/api/siwe", siweRouter.routes(), siweRouter.allowedMethods());
 
-// Define other API routes directly on apiRouter
+// Require sessionId
+apiRouter.use(async (ctx, next) => {
+	const { address, sessionId } = await ctx.request.body.json();
+	//const
+	if (!sessionId) {
+		ctx.response.status = 401;
+		ctx.response.body = { error: "Unauthorized" };
+		return;
+	}
+	await next();
+});
+
 apiRouter
 	.post("/api/account", async (ctx) => {
 		const { address, sessionId } = await ctx.request.body.json();
