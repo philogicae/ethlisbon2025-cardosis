@@ -10,7 +10,6 @@ console.log(rows);
 db.close();
 
 const app = new Application();
-app.proxy = true; // Trust proxy headers (e.g., X-Forwarded-Proto for secure cookies)
 
 app.use(
 	oakCors({
@@ -51,30 +50,28 @@ apiRouter.use("/api/siwe", siweRouter.routes(), siweRouter.allowedMethods());
 
 // Define other API routes directly on apiRouter
 apiRouter
-	.get("/api", (ctx) => {
-		ctx.response.body = "API Root";
-	})
-	.get("/api/get/:text", (ctx) => {
-		const { text } = ctx.params;
-		ctx.response.body = { text };
-	})
-	.post("/api/post", async (ctx) => {
-		const { test } = await ctx.request.body.json();
-		ctx.response.body = { test, status: "ok" };
-	})
 	.post("/api/account", async (ctx) => {
-		const { address } = await ctx.request.body.json();
+		const { address, sessionId } = await ctx.request.body.json();
 		ctx.response.body = {
-			status: "ok",
-			accounts: {
+			status: "ok", // not_found // creating
+			safes: {
 				card: address,
 				dca: address,
 				reserve: address,
 			},
 		};
 	})
+	.post("/api/account/create", async (ctx) => {
+		const { address, sessionId } = await ctx.request.body.json();
+		// start the process...
+		ctx.response.body = { status: "processing", requestId: "123" };
+	})
+	.post("/api/account/create/status", async (ctx) => {
+		const { address, sessionId, requestId } = await ctx.request.body.json();
+		ctx.response.body = { status: "done", requestId }; // invalid // creating
+	})
 	.post("/api/account/balances", async (ctx) => {
-		const { address } = await ctx.request.body.json();
+		const { address, sessionId } = await ctx.request.body.json();
 		ctx.response.body = {
 			status: "ok",
 			balances: {
@@ -86,7 +83,7 @@ apiRouter
 		};
 	})
 	.post("/api/account/charts", async (ctx) => {
-		const { address } = await ctx.request.body.json();
+		const { address, sessionId } = await ctx.request.body.json();
 		ctx.response.body = {
 			status: "ok",
 			charts: [
@@ -114,7 +111,7 @@ apiRouter
 		};
 	})
 	.post("/api/account/transactions", async (ctx) => {
-		const { address } = await ctx.request.body.json();
+		const { address, sessionId } = await ctx.request.body.json();
 		const timestamp = Date.now();
 		ctx.response.body = {
 			status: "ok",
