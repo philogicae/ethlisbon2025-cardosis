@@ -83,8 +83,15 @@ export default function Home() {
         });
       }, 3000);
     }
-  }, [isConnected, address, accountPrepared, creationProgress]);
-  console.log(accountPrepared);
+  }, [
+    isConnected,
+    address,
+    accountPrepared,
+    creationProgress,
+    sessionId,
+    chainId,
+  ]);
+
   return (
     <div className="px-4 py-6 w-full flex flex-col gap-4">
       <div className="flex justify-start h-[40px]">

@@ -19,7 +19,6 @@ import { cn } from "@/lib/utils";
 import { useGetCharts } from "@/hooks/api/useGetCharts";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
-import { SIWE_SESSION_ID } from "@/constants/storage";
 
 const chartConfig = {
   card: {

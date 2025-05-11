@@ -1,7 +1,6 @@
 import axios from "axios";
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
-import { SIWE_SESSION_ID } from "@/constants/storage";
 
 // export type Token = {
 //   attributes: {

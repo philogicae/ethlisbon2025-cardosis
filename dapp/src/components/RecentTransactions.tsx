@@ -19,7 +19,6 @@ import {
   MoveRight,
   PiggyBank,
 } from "lucide-react";
-import { SIWE_SESSION_ID } from "@/constants/storage";
 
 const mockTransactions = [
   {
