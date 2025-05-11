@@ -2,12 +2,16 @@ import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { siweRouter } from "./siwe.ts";
 import Database from "./db.ts";
+import SafeManager from "./safe_management/safe.ts";
 
 // Quick db test
 const db = new Database();
 const rows = db.getAllPeople();
 console.log(rows);
 db.close();
+
+// Safe manager
+const safeManager = new SafeManager();
 
 const app = new Application();
 
@@ -53,7 +57,7 @@ apiRouter
 	.post("/api/account", async (ctx) => {
 		const { address, sessionId } = await ctx.request.body.json();
 		ctx.response.body = {
-			status: "ok", // not_found // creating
+			status: "ok", // creating // not_found
 			safes: {
 				card: address,
 				dca: address,
@@ -64,11 +68,7 @@ apiRouter
 	.post("/api/account/create", async (ctx) => {
 		const { address, sessionId } = await ctx.request.body.json();
 		// start the process...
-		ctx.response.body = { status: "processing", requestId: "123" };
-	})
-	.post("/api/account/create/status", async (ctx) => {
-		const { address, sessionId, requestId } = await ctx.request.body.json();
-		ctx.response.body = { status: "done", requestId }; // invalid // creating
+		ctx.response.body = { status: "done" }; // creating // error
 	})
 	.post("/api/account/balances", async (ctx) => {
 		const { address, sessionId } = await ctx.request.body.json();

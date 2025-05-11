@@ -9,6 +9,7 @@
     "restart": "bash ./scripts/restart.sh"
   },
   "imports": {
-    "viem": "npm:viem@^2.29.1"
+    "@safe-global/sdk-starter-kit": "npm:@safe-global/sdk-starter-kit@^2.0.2",
+    "viem": "npm:viem@^2.29.2"
   }
 }
