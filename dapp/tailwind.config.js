@@ -14,8 +14,8 @@ module.exports = {
           light: "#fc114e",
           dark: "#fc114e", // "#191919",
         },
-      }
-    }
+      },
+    },
   },
   plugins: [],
 };

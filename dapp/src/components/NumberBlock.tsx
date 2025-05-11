@@ -14,24 +14,44 @@ const NumberBlock = ({
   description,
   value,
   className,
+  isLoading,
 }: {
   description: string;
   value: number;
   className?: string;
+  isLoading?: boolean;
 }) => {
   return (
     <Card className={cn(className, "gap-2")}>
       <CardHeader className="relative">
         <CardDescription>{description}</CardDescription>
-        <CardTitle className="text-3xl font-black">€{value}</CardTitle>
+        <CardTitle
+          className={cn(
+            "text-3xl font-black",
+            isLoading && "animate-pulse blur-md select-none"
+          )}
+        >
+          €{value}
+        </CardTitle>
         <div className="absolute right-4 top-4">
-          <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
+          <Badge
+            variant="outline"
+            className={cn(
+              isLoading && "animate-pulse blur-md select-none",
+              "flex gap-1 rounded-lg text-xs"
+            )}
+          >
             <TrendingUpIcon className="size-3" />
             +12.5%
           </Badge>
         </div>
       </CardHeader>
-      <CardFooter className="flex-col items-start gap-1 text-sm">
+      <CardFooter
+        className={cn(
+          "flex-col items-start gap-1 text-sm",
+          isLoading && "animate-pulse blur-md select-none"
+        )}
+      >
         <div className="line-clamp-1 flex gap-2 font-medium">
           Trending up this month <TrendingUpIcon className="size-4" />
         </div>

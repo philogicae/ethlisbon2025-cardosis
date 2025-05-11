@@ -11,6 +11,9 @@ import { ConnectKitButton } from "connectkit";
 import CarouselTokens from "@/components/CarouselTokens";
 import { useAccount } from "wagmi";
 import { useEffect } from "react";
+import { useGetBalances } from "@/hooks/api/useGetBalances";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 /**
  *
@@ -28,7 +31,13 @@ import { useEffect } from "react";
  */
 
 export default function Home() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
+
+  const isTablet = useIsMobile(1160);
+  const isMobile = useIsMobile(890);
+
+  const { isLoading, data: balances } = useGetBalances(address);
+  const isLoadingBalances = !address || isLoading;
 
   useEffect(() => {
     if (isConnected) {
@@ -44,77 +53,44 @@ export default function Home() {
           }}
         />
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(340px,1fr))] auto-rows-auto gap-4">
         <NumberBlock
-          className="h-fit col-span-1"
+          className="h-fit row-span-1"
+          description="Card account balance"
+          value={balances?.card || 0}
+          isLoading={isLoadingBalances}
+        />
+        <NumberBlock
+          className="h-fit row-span-1"
+          description="DCA account balance"
+          value={balances?.dca_current || 0}
+          isLoading={isLoadingBalances}
+        />
+        <NumberBlock
+          className="min-[1160px]:h-fit row-span-1"
           description="Total Saved Funds"
-          value={230}
+          value={balances?.dca_total || 0}
+          isLoading={isLoadingBalances}
         />
-        <div
-          className={`col-start-3 row-start-1 row-span-2
-                      flex flex-col gap-4`}
-        >
-          <BankSettings className="min-w-[320px] max-w-[480px] h-fit" />
-          <Banner className="h-full" />
-          <NumberBlock
-            className="h-fit"
-            description="DCA account balance"
-            value={394}
-          />
-        </div>
-        <Chart className="w-full col-span-2 row-start-2 grid-row-[1/-1]" />
-        {/* <RecentTransactions className="min-w-[360px] col-span-1 col-start-3 row-start-2" /> */}
+        <RecentTransactions
+          isMobile={isTablet}
+          className="min-w-[360px] h-fit w-full cols-span-1 min-[1160px]:col-span-2 row-span-2"
+        />
+        <BankSettings className="min-w-[320px] min-[1160px]:max-w-[480px]" />
+        {!isTablet && <Banner className="min-[1160px]:h-full" />}
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2 flex gap-4">
-          <WithdrawBox />
-          <SavingsGoal className="h-fit w-full" />
+      <div className={cn("grid grid-cols-3 gap-4", isTablet && "grid-cols-2")}>
+        <div className="flex flex-col col-span-2 gap-4">
+          <Chart className="w-full col-span-2 row-span-1" />
+          <WithdrawBox className="col-start-1 row-start-2 w-full" />
         </div>
-        <div className="col-start-3 flex flex-col gap-4">
-          <NumberBlock
-            className="h-fit"
-            description="Card account balance"
-            value={180}
-          />
-          <CarouselTokens className="flex-1" />
+
+        <div className="col-span-1 flex flex-col gap-4">
+          {isTablet && <Banner className="min-[1160px]:h-full" />}
+          <CarouselTokens className="h-[unset]" />
+          <SavingsGoal className="h-fit w-full col-start-3" />
         </div>
-        <RecentTransactions className="min-w-[360px] col-span-2 row-start-2" />
       </div>
-      {/* <div className="flex flex-wrap md:flex-nowrap gap-4">
-        <Chart className="w-full" />
-        <BankSettings className="min-w-[320px] max-w-[480px] h-fit" />
-      </div> */}
-      {/* <div className="grid grid-cols-3 grid-rows-2 gap-4 grid-rows-[auto_1fr]">
-        <NumberBlock
-          className="h-fit col-span-1"
-          description="Total Saved Funds"
-          value={230}
-        />
-        <NumberBlock
-          className="h-fit col-span-1"
-          description="Interest earned"
-          value={112}
-        />
-        <Banner className="col-span-1" />
-        <RecentTransactions className="min-w-[360px] col-span-2 row-start-2" />
-        <div className="row-start-2 col-start-3 flex flex-col gap-4">
-          <NumberBlock
-            className="h-fit"
-            description="Card account balance"
-            value={180}
-          />
-          <NumberBlock
-            className="h-fit"
-            description="DCA account balance"
-            value={394}
-          />
-          <CarouselTokens className="flex-1" />
-        </div>
-      </div> */}
-      {/* <div className="flex gap-4">
-        <WithdrawBox />
-        <SavingsGoal className="h-fit" />
-      </div> */}
     </div>
   );
 }

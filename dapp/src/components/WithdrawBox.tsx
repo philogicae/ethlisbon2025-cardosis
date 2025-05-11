@@ -27,12 +27,12 @@ const currencies = [
   { value: "DAI", label: "DAI" },
 ];
 
-const WithdrawBox = () => {
+const WithdrawBox = ({ className }: { className?: string }) => {
   const { address } = useAccount();
   const [currency, setCurrency] = React.useState(currencies[0].value);
   const [toMyWallet, setToMyWallet] = React.useState(true);
   return (
-    <Card className="w-[520px] gap-">
+    <Card className={cn("w-[520px]", className)}>
       {/* TODO: remove width */}
       <CardHeader>
         <CardTitle>Withdraw to your accounts</CardTitle>

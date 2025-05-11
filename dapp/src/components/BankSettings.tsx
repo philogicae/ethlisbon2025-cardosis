@@ -25,7 +25,7 @@ export function BankSettings({ className }: { className?: string }) {
         <CardDescription>Manage your saving roundups here.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col w-full gap-6">
-        <div className="flex items-start">
+        <div className="flex items-start justify-between">
           <Label
             className="flex flex-col items-start gap-[0.5rem] cursor-pointer select-none"
             htmlFor="byTransaction"
@@ -37,7 +37,7 @@ export function BankSettings({ className }: { className?: string }) {
           </Label>
           <Switch id="byTransaction" defaultChecked />
         </div>
-        <div className="flex items-start">
+        <div className="flex items-start justify-between">
           <Label
             className="flex flex-col items-start gap-[0.5rem] cursor-pointer select-none"
             htmlFor="byTime"

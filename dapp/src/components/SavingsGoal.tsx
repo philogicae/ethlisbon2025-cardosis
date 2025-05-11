@@ -21,8 +21,7 @@ export function SavingsGoal({ className }: { className?: string }) {
   return (
     <Card className={cn("bg-card flex flex-col items-center p-6", className)}>
       <CardHeader className="w-full text-center pb-2">
-        <CardTitle className="text-white text-lg">Move Goal</CardTitle>
-        <CardDescription>Set your deposit goal.</CardDescription>
+        <CardTitle className="text-white text-lg">Deposit Goal</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center w-full gap-4">
         <div className="flex items-center justify-center gap-8 my-2">

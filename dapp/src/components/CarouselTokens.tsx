@@ -1,5 +1,5 @@
 import React from "react";
-import { useToken } from "@/hooks/api/useTokens";
+import { useGetTokens } from "@/hooks/api/useGetTokens";
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { tokens } from "@/constants/tokens";
@@ -18,11 +18,11 @@ const loaderToken = {
 };
 
 const CarouselTokens = ({ className }: { className?: string }) => {
-  const { data, isLoading } = useToken(tokens.map((t) => t.address));
+  const { data, isLoading } = useGetTokens(tokens.map((t) => t.address));
 
   return (
     <Carousel
-      className={cn(className, "h-full")}
+      className={cn("h-full", className)}
       opts={{ align: "start", loop: true }}
       plugins={[autoplay()]}
       orientation="vertical"

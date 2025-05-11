@@ -2,10 +2,14 @@ import axios from "axios";
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
 
-export type Token = {
-  account: string;
-  amount: number;
-  currency: string;
+export type Transaction = {
+  details: {
+    token_in?: string;
+    amount_in?: number;
+    token_out?: string;
+    amount_out?: number;
+  };
+  status: "pending" | "executed";
   timestamp: number;
   from_account?: string;
   to_account?: string;
@@ -14,7 +18,7 @@ export type Token = {
 
 const fetchTransactionsList = async (
   addr: string | undefined
-): Promise<Token[]> => {
+): Promise<Transaction[]> => {
   if (!addr) return [];
   const response = await axios
     .post(`${baseApi}/account/transactions`, { address: addr })
@@ -22,7 +26,7 @@ const fetchTransactionsList = async (
   return response.transactions;
 };
 
-const useTransactionsList = (addr: string | undefined) => {
+const useGetTransactionsList = (addr: string | undefined) => {
   return useQuery({
     queryKey: ["transactions", addr],
     queryFn: () => fetchTransactionsList(addr),
@@ -30,4 +34,4 @@ const useTransactionsList = (addr: string | undefined) => {
   });
 };
 
-export { useTransactionsList, fetchTransactionsList };
+export { useGetTransactionsList, fetchTransactionsList };

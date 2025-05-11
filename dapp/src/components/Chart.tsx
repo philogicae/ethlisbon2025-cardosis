@@ -1,6 +1,6 @@
 "use client";
 import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -17,39 +17,93 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
-
-const chartData = [
-  { month: "January", saved: 186, gained: 186 },
-  { month: "February", saved: 205, gained: 215 },
-  { month: "March", saved: 237, gained: 250 },
-  { month: "April", saved: 240, gained: 262 },
-  { month: "May", saved: 247, gained: 292 },
-  { month: "June", saved: 252, gained: 312 },
-];
+import { useGetCharts } from "@/hooks/api/useGetCharts";
+import { useAccount } from "wagmi";
+import { useEffect, useState } from "react";
 
 const chartConfig = {
-  saved: {
-    label: "Saved",
+  card: {
+    label: "Card",
     color: "var(--chart-1)",
   },
-  gained: {
-    label: "Gained",
+  dca: {
+    label: "DCA",
+    color: "var(--chart-3)",
+  },
+  reserve: {
+    label: "Reserve",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
+const loadingData = [
+  {
+    card: 100,
+    reserve: 200,
+    dca: 5,
+    timestamp: new Date().toISOString(),
+  },
+  {
+    card: 200,
+    reserve: 300,
+    dca: 4,
+    timestamp: new Date().toISOString(),
+  },
+];
+
 export function Chart({ className }: { className?: string }) {
+  const { address } = useAccount();
+  const { data: charts, isLoading } = useGetCharts(address);
+  const isLoadingCharts = isLoading || !address;
+  // State to store the maximum value found in chart data
+  const [maxValue, setMaxValue] = useState<number>(0);
+
+  useEffect(() => {
+    if (!charts?.length) return;
+
+    // Convert string values to numbers and find max value in a single pass
+    let localMax = 0;
+    charts.forEach((chart) => {
+      chart.card = Number(chart.card);
+      chart.reserve = Number(chart.reserve);
+      chart.dca = Number(chart.dca);
+
+      // Calculate the sum or find the max individual value, depending on your chart type
+      // If stacked chart, we need the sum of values
+      const stackSum = chart.card + chart.reserve + chart.dca;
+      // If not stacked, we need the largest individual value
+      const individualMax = Math.max(chart.card, chart.reserve, chart.dca);
+
+      // Use stackSum for stacked charts, individualMax otherwise
+      const currentMax = stackSum; // Change to individualMax if not using stackId in Areas
+
+      if (currentMax > localMax) {
+        localMax = currentMax;
+      }
+    });
+
+    // Add 10% padding to the max value for better visualization
+    setMaxValue(Math.ceil(localMax * 1.1));
+  }, [charts]);
+
   return (
-    <Card className={cn("w-1/2", className)}>
+    <Card className={cn(className)}>
+      {/* className={cn(
+          (isLoading || !address) && "animate-pulse blur-md select-none"
+        )} */}
       <CardHeader>
-        <CardTitle>Savings chart</CardTitle>
+        <CardTitle>Savings movement</CardTitle>
         <CardDescription>Track your savings progress</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent
+        className={cn(
+          isLoadingCharts && "animate-pulse blur-md select-none bg-[#1e1e1e]"
+        )}
+      >
         <ChartContainer config={chartConfig}>
           <AreaChart
             accessibilityLayer
-            data={chartData}
+            data={charts || loadingData}
             margin={{
               left: 12,
               right: 12,
@@ -57,54 +111,83 @@ export function Chart({ className }: { className?: string }) {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="timestamp"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => new Date(value).toLocaleDateString()}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              // allowDataOverflow
+              hide
+              domain={[1, maxValue]}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <defs>
-              <linearGradient id="fillSaved" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillCard" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-saved)"
+                  stopColor="var(--color-card)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-saved)"
+                  stopColor="var(--color-card)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
-              <linearGradient id="fillGained" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillReserve" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-gained)"
+                  stopColor="var(--color-reserve)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-gained)"
+                  stopColor="var(--color-reserve)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient id="fillDca" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-dca)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-dca)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
             </defs>
             <Area
-              dataKey="gained"
+              dataKey="card"
               type="natural"
-              fill="url(#fillGained)"
+              fill="url(#fillCard)"
               fillOpacity={0.4}
-              stroke="var(--color-gained)"
+              stroke="var(--color-card)"
               stackId="a"
               strokeWidth={4}
             />
             <Area
-              dataKey="saved"
+              dataKey="reserve"
               type="natural"
-              fill="url(#fillSaved)"
+              fill="url(#fillReserve)"
               fillOpacity={0.4}
-              stroke="var(--color-saved)"
+              stroke="var(--color-reserve)"
+              stackId="a"
+              strokeWidth={4}
+            />
+            <Area
+              dataKey="dca"
+              type="natural"
+              fill="url(#fillDca)"
+              fillOpacity={0.4}
+              stroke="var(--color-dca)"
               stackId="a"
               strokeWidth={4}
             />

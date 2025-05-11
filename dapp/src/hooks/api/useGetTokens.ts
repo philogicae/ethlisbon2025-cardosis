@@ -24,7 +24,7 @@ const fetchToken = async (addr: string[]): Promise<Token[]> => {
   return response.data;
 };
 
-const useToken = (searchValue: string[]) => {
+const useGetTokens = (searchValue: string[]) => {
   return useQuery({
     queryKey: ["token", searchValue],
     queryFn: () => fetchToken(searchValue),
@@ -32,4 +32,4 @@ const useToken = (searchValue: string[]) => {
   });
 };
 
-export { useToken, fetchToken };
+export { useGetTokens, fetchToken };
