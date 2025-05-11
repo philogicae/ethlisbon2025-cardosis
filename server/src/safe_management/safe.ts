@@ -32,8 +32,8 @@ class SafeManager {
 
 	constructor() {
 		this.providers = {
-			[sepolia.id]: sepolia.rpcUrls.default.http[0],
-			[gnosis.id]: gnosis.rpcUrls.default.http[0],
+			[sepolia.id]: "https://eth-sepolia.public.blastapi.io",
+			[gnosis.id]: "https://gnosis-mainnet.public.blastapi.io",
 		};
 		const signer = Deno.env.get("AUTH_PK");
 		if (!signer) {
@@ -260,27 +260,26 @@ class SafeManager {
 		token: string,
 		amount: bigint,
 	) {
+		// Check addresses
 		if (!["card", "dca", "reserve"].includes(from)) {
 			throw new Error("Invalid 'from' address");
 		}
-		// Check addresses
 		// deno-lint-ignore no-explicit-any
 		const account: any = db.getAccount(ownerAddress, chainId) || {};
 		if (!account) {
 			throw new Error("Account not found");
 		}
-		const fromAddress = account[from] as `0x${string}`;
 		account.gnosispay = this.auth_address;
-		const toAddress = account[to] as `0x${string}` | undefined;
-		if (!toAddress) {
-			throw new Error("Invalid 'to' address");
-		}
+		const toAddress = (account[to] || to) as `0x${string}`;
+		console.log(
+			`Transferring ${amount} ${token} from ${from} (${account[from]}) to ${to} (${toAddress})`,
+		);
 
 		// Get role modifier contract
 		const role_modifier = await this.getRoleModifierContract(
 			ownerAddress,
 			chainId,
-			fromAddress,
+			from,
 		);
 
 		// Encode transfer calldata
