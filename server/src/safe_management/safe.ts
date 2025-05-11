@@ -13,9 +13,17 @@ import { transferRole } from "./roles/transfer.ts";
 import { role_modifier_abi, erc20_abi } from "./roles/abis.ts";
 
 class SafeManager {
+	private static instance: SafeManager;
 	private provider: string;
 	private signer: string;
 	private wallet_address: `0x${string}`;
+
+	static getInstance(): SafeManager {
+		if (!SafeManager.instance) {
+			SafeManager.instance = new SafeManager();
+		}
+		return SafeManager.instance;
+	}
 
 	constructor() {
 		this.provider = sepolia.rpcUrls.default.http[0];
