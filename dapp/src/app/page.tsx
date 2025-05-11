@@ -48,7 +48,13 @@ export default function Home() {
   const isTablet = useIsMobile(1160);
   // const isMobile = useIsMobile(890);
 
-  const sessionId = localStorage.getItem(SIWE_SESSION_ID);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSessionId(localStorage.getItem(SIWE_SESSION_ID));
+    }
+  }, []);
   const {
     isLoading,
     data: balances,
