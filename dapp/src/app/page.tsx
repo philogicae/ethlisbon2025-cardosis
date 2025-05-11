@@ -20,13 +20,11 @@ import { cn } from "@/lib/utils";
  * TODO:
  * 1. Implement loaders
  * 2. Handle Errors
- * 3. Fix Grid
  * 4. fix shadows
  * 6. implement hovers
  * 7. landing
  * 8. fake shop
  * 9. ai
- * 10. enhance big screens
  *
  */
 
