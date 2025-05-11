@@ -64,19 +64,65 @@ apiRouter.use(async (ctx, next) => {
 apiRouter
 	.post("/api/account", async (ctx) => {
 		const { address, sessionId } = await ctx.request.body.json();
+		// deno-lint-ignore no-explicit-any
+		const account: any = db.getAccount(address, 11155111);
 		ctx.response.body = {
-			status: "ok", // creating // not_found
+			status: account?.status || "not_found",
 			safes: {
-				card: address,
-				dca: address,
-				reserve: address,
+				card: account?.card,
+				dca: account?.dca,
+				reserve: account?.reserve,
 			},
 		};
 	})
 	.post("/api/account/create", async (ctx) => {
 		const { address, sessionId } = await ctx.request.body.json();
-		// start the process...
-		ctx.response.body = { status: "done" }; // creating // error
+		// deno-lint-ignore no-explicit-any
+		const account: any = db.getAccount(address, 11155111);
+		if (!account) {
+			try {
+				db.addAccount(address, 11155111, "", "", "", "creating");
+				safeManager
+					.createAccount(address, 11155111) // Sepolia chain ID
+					.then((safes) => {
+						db.updateAccount(
+							address,
+							11155111,
+							safes.card,
+							safes.dca,
+							safes.reserve,
+							"created",
+						);
+						console.log(`Account creation completed for ${address}`, safes);
+					})
+					.catch((error) => {
+						db.removeAccount(address, 11155111);
+						console.error(`Account creation failed for ${address}:`, error);
+					});
+				ctx.response.body = {
+					status: "creating",
+					message:
+						"Account creation has started and will continue in the background",
+				};
+			} catch (error) {
+				db.removeAccount(address, 11155111);
+				console.error("Failed to initiate account creation:", error);
+				ctx.response.body = {
+					status: "error",
+					message: "Failed to start account creation",
+				};
+			}
+		} else if (account.status === "creating") {
+			ctx.response.body = {
+				status: "creating",
+				message: "Account creation is already in progress",
+			};
+		} else {
+			ctx.response.body = {
+				status: "created",
+				message: "Account already created",
+			};
+		}
 	})
 	.post("/api/account/balances", async (ctx) => {
 		const { address, sessionId } = await ctx.request.body.json();
