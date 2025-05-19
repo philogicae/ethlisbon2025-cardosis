@@ -1,7 +1,7 @@
-import axios from "axios";
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
 import { SIWE_SESSION_ID } from "@/constants/storage";
+import apiClient from "@/lib/api";
 
 export type ChartStamp = {
   timestamp: number;
@@ -13,7 +13,7 @@ export type ChartStamp = {
 const fetchCharts = async (addr: string | undefined, chainId?: number): Promise<ChartStamp[]> => {
   if (!addr || !chainId) return [];
   const sessionId = localStorage.getItem(SIWE_SESSION_ID);
-  const response = await axios
+  const response = await apiClient
     .post(`${baseApi}/account/charts`, { address: addr, sessionId, chainId })
     .then((res) => res.data);
   return response.charts; 
