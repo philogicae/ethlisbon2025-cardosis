@@ -1,6 +1,6 @@
-import axios from "axios";
 import { geckoApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
+import apiClient from "@/lib/api";
 
 export type Token = {
   attributes: {
@@ -17,7 +17,7 @@ export type Token = {
 };
 
 const fetchToken = async (addr: string[]): Promise<Token[]> => {
-  const response = await axios
+  const response = await apiClient
     .get(`${geckoApi}/networks/xdai/tokens/multi/${addr}`)
     .then((res) => res.data);
     
