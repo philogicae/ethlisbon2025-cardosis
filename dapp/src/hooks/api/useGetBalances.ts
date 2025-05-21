@@ -1,6 +1,6 @@
-import axios from "axios";
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
+import apiClient from "@/lib/api";
 
 export type Balance = {
   card: number | null;
@@ -11,7 +11,7 @@ export type Balance = {
 
 const fetchBalances = async (addr?: string, sessionId?: string, chainId?: number): Promise<Balance> => {
   if (!addr || !sessionId || !chainId) return {card: null, dca_current: null, dca_total: null, reserve: null};
-  const response = await axios
+  const response = await apiClient
     .post(`${baseApi}/account/balances`, { address: addr, sessionId, chainId })
     .then((res) => res.data);
 
