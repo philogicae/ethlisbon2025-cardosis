@@ -3,10 +3,10 @@ import { WagmiProvider, createConfig, http } from "wagmi";
 import { gnosis, sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  ConnectKitProvider,
-  getDefaultConfig,
-  SIWEConfig,
-  SIWEProvider,
+	ConnectKitProvider,
+	getDefaultConfig,
+	type SIWEConfig,
+	SIWEProvider,
 } from "connectkit";
 import { SiweMessage } from "siwe";
 import { baseApi } from "@/constants/api";
@@ -15,20 +15,20 @@ import { useEffect } from "react";
 import { useAppStore } from "@/stores/useAppStore";
 
 const config = createConfig(
-  getDefaultConfig({
-    // Your dApps chains
-    chains: [sepolia, gnosis],
-    transports: {
-      // RPC URL for each chain
-      [sepolia.id]: http(`https://eth-sepolia.public.blastapi.io`),
-      [gnosis.id]: http(`https://gnosis-mainnet.public.blastapi.io`),
-    },
-    enableFamily: false,
-    // Required API Keys
-    walletConnectProjectId:
-      process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
-    appName: "Cardosis",
-  })
+	getDefaultConfig({
+		// Your dApps chains
+		chains: [sepolia, gnosis],
+		transports: {
+			// RPC URL for each chain
+			[sepolia.id]: http("https://eth-sepolia.public.blastapi.io"),
+			[gnosis.id]: http("https://gnosis-mainnet.public.blastapi.io"),
+		},
+		enableFamily: false,
+		// Required API Keys
+		walletConnectProjectId:
+			process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
+		appName: "Cardosis",
+	}),
 );
 
 const queryClient = new QueryClient();
