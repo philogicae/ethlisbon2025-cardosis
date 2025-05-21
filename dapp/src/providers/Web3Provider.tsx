@@ -11,7 +11,8 @@ import {
 import { SiweMessage } from "siwe";
 import { baseApi } from "@/constants/api";
 import axios from "axios";
-import { SIWE_SESSION_ID } from "@/constants/storage";
+import { useEffect } from "react";
+import { useAppStore } from "@/stores/useAppStore";
 
 const config = createConfig(
 	getDefaultConfig({
@@ -32,71 +33,86 @@ const config = createConfig(
 
 const queryClient = new QueryClient();
 
-const siweConfig: SIWEConfig = {
-	getNonce: async () =>
-		axios.get(`${baseApi}/siwe/nonce`).then((res) => res.data),
-	createMessage: ({ nonce, address, chainId }) =>
-		new SiweMessage({
-			version: "1",
-			domain: window.location.host,
-			uri: window.location.origin,
-			address,
-			chainId,
-			nonce,
-			// Human-readable ASCII assertion that the user will sign, and it must not contain `\n`.
-			statement: "Sign in With Ethereum.",
-		}).prepareMessage(),
-	verifyMessage: async ({ message, signature }) =>
-		axios
-			.post(
-				`${baseApi}/siwe/verify`,
-				{
-					message,
-					signature,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				},
-			)
-			.then((res) => {
-				localStorage.setItem(SIWE_SESSION_ID, res.data.sessionId);
-				return res.data.ok;
-			})
-			.catch(() => {
-				localStorage.removeItem(SIWE_SESSION_ID);
-				return null;
-			}),
-	getSession: async () => {
-		const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
-		if (!sessionId) return null;
-		return axios.post(`${baseApi}/siwe/session`, { sessionId }).then((res) => {
-			if (res.data.address) {
-				return res.data;
-			}
-			localStorage.removeItem(SIWE_SESSION_ID);
-			return null;
-		});
-	},
-	signOut: async () => {
-		const sessionId = localStorage.getItem(SIWE_SESSION_ID) || "";
-
-		return axios.post(`${baseApi}/siwe/logout`, { sessionId }).then((res) => {
-			localStorage.removeItem(SIWE_SESSION_ID);
-			return res.data.ok;
-		});
-	},
-};
-
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
-	return (
-		<WagmiProvider config={config}>
-			<QueryClientProvider client={queryClient}>
-				<SIWEProvider {...siweConfig}>
-					<ConnectKitProvider>{children}</ConnectKitProvider>
-				</SIWEProvider>
-			</QueryClientProvider>
-		</WagmiProvider>
-	);
+  // Use Zustand store instead of local state
+  const { sessionId, setSessionId, setIsAuthenticated, isAuthenticated } =
+    useAppStore();
+  console.log(isAuthenticated);
+  // useEffect(() => {
+  //   const id = getSessionId();
+  //   if (id) {
+  //     setSessionId(id);
+  //   }
+  // }, [getSessionId, setSessionId]);
+
+  const siweConfig: SIWEConfig = {
+    getNonce: async () =>
+      axios.get(`${baseApi}/siwe/nonce`).then((res) => res.data),
+    createMessage: ({ nonce, address, chainId }) =>
+      new SiweMessage({
+        version: "1",
+        domain: window.location.host,
+        uri: window.location.origin,
+        address,
+        chainId,
+        nonce,
+        // Human-readable ASCII assertion that the user will sign, and it must not contain `\n`.
+        statement: "Sign in With Ethereum.",
+      }).prepareMessage(),
+    verifyMessage: async ({ message, signature }) =>
+      axios
+        .post(
+          `${baseApi}/siwe/verify`,
+          {
+            message,
+            signature,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          setSessionId(res.data.sessionId);
+          console.log("VEIRD:", res.data);
+          setIsAuthenticated(true);
+          return res.data.ok;
+        }),
+    getSession: async () => {
+      return axios
+        .post(`${baseApi}/siwe/session`, { sessionId })
+        .then((res) => {
+          setSessionId(res.data.sessionId);
+          console.log(res.data);
+          setIsAuthenticated(true);
+          return res.data;
+        })
+        .catch((error) => {
+          setSessionId(null);
+          setUserAddress(null);
+          setIsAuthenticated(false);
+          return null;
+        });
+    },
+    signOut: async () => {
+      return axios.post(`${baseApi}/siwe/logout`, { sessionId }).then((res) => {
+        // Reset all auth-related state
+        setSessionId(null);
+        setUserAddress(null);
+        setIsAuthenticated(false);
+        return res.data.ok;
+      });
+    },
+  };
+
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <SIWEProvider {...siweConfig}>
+          <ConnectKitProvider>{children}</ConnectKitProvider>
+        </SIWEProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
 };
