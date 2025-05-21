@@ -27,10 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased flex`}>
+      <body className={`flex antialiased`}>
         <Web3Provider>
           {/* <SidebarProvider> */}
-          <div className="mx-auto flex">
+          <div className="flex mx-auto">
             <div className="w-[80px]">
               <Navigation className="sticky top-[80px] mr-0" />
             </div>
