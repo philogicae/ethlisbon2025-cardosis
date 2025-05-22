@@ -1,6 +1,5 @@
 // src/lib/api.tsx
 import axios, { InternalAxiosRequestConfig } from "axios";
-import { useAppStore } from "@/stores/useAppStore";
 import { baseApi, geckoApi } from "@/constants/api";
 import {
   SIWE_ADDRESS,

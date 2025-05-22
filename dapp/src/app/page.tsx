@@ -27,7 +27,6 @@ import {
   createAccount,
   usePrepareAccount,
 } from "@/hooks/api/usePrepareAccount";
-import { SIWE_SESSION_ID } from "@/constants/storage";
 
 /**
  *
@@ -48,18 +47,15 @@ export default function Home() {
   const isTablet = useIsMobile(1160);
   // const isMobile = useIsMobile(890);
 
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  // TODO: check fetches
+  const [sessionId] = useState<string | null>(null);
 
   // useEffect(() => {
   //   if (typeof window !== "undefined") {
   //     setSessionId(localStorage.getItem(SIWE_SESSION_ID));
   //   }
   // }, []);
-  const {
-    isLoading,
-    data: balances,
-    isError,
-  } = useGetBalances(address, sessionId || "", chainId);
+  const { isLoading, data: balances, isError } = useGetBalances();
 
   const { data: accountPrepared } = usePrepareAccount(
     address,

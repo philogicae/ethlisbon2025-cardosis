@@ -1,4 +1,3 @@
-import axios from "axios";
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/lib/api";

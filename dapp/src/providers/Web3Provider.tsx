@@ -11,7 +11,6 @@ import {
 import { SiweMessage } from "siwe";
 import { baseApi } from "@/constants/api";
 import axios from "axios";
-import { useEffect } from "react";
 import { useAppStore } from "@/stores/useAppStore";
 import {
   SIWE_ADDRESS,
@@ -41,9 +40,8 @@ const queryClient = new QueryClient();
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   // Use Zustand store instead of local state
   const { sessionId, setSessionId, setIsAuthenticated } = useAppStore();
+  // TODO: check if this is needed
   const sessionIdFromStorage = localStorage.getItem(SIWE_SESSION_ID);
-  const addressFromStorage = localStorage.getItem(SIWE_ADDRESS);
-  const chainIdFromStorage = localStorage.getItem(SIWE_CHAIN_ID);
 
   const siweConfig: SIWEConfig = {
     getNonce: async () =>
