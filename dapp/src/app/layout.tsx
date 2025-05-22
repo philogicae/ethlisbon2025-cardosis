@@ -30,10 +30,11 @@ export default function RootLayout({
       <body className="flex flex-col min-h-screen">
         <Web3Provider>
           <div className="flex flex-1">
-            <div className="w-[80px]">
+            <div className="w-[80px] hidden sm:block">
               <Navigation className="sticky top-[80px] mr-0" />
             </div>
             <main className="flex-1 w-full max-w-[1200px] mr-auto">
+              <Navigation className="sm:hidden" />
               {children}
             </main>
           </div>
