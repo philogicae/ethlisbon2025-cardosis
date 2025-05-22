@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 import { useGetCharts } from "@/hooks/api/useGetCharts";
-import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import { useAppStore } from "@/stores/useAppStore";
 
@@ -52,8 +51,7 @@ const loadingData = [
 ];
 
 export function Chart({ className }: { className?: string }) {
-  const { isAuthenticated, sessionId } = useAppStore();
-  const { address, chainId } = useAccount();
+  const { isAuthenticated } = useAppStore();
 
   const { data: charts, isLoading, isError } = useGetCharts();
   const isLoadingCharts = isLoading || !isAuthenticated || isError;

@@ -9,7 +9,6 @@ import {
 import { Button } from "./ui/button";
 import { cn, humanReadableDate } from "@/lib/utils";
 import { useGetTransactionsList } from "@/hooks/api/useGetTransactionslist";
-import { useAccount } from "wagmi";
 import {
   BanknoteArrowDown,
   BanknoteArrowUp,

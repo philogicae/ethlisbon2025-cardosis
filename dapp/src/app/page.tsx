@@ -27,7 +27,6 @@ import {
   createAccount,
   usePrepareAccount,
 } from "@/hooks/api/usePrepareAccount";
-import { SIWE_SESSION_ID } from "@/constants/storage";
 
 /**
  *
@@ -48,18 +47,15 @@ export default function Home() {
   const isTablet = useIsMobile(1160);
   // const isMobile = useIsMobile(890);
 
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  // TODO: check fetches
+  const [sessionId] = useState<string | null>(null);
 
   // useEffect(() => {
   //   if (typeof window !== "undefined") {
   //     setSessionId(localStorage.getItem(SIWE_SESSION_ID));
   //   }
   // }, []);
-  const {
-    isLoading,
-    data: balances,
-    isError,
-  } = useGetBalances(address, sessionId || "", chainId);
+  const { isLoading, data: balances, isError } = useGetBalances();
 
   const { data: accountPrepared } = usePrepareAccount(
     address,
@@ -79,7 +75,6 @@ export default function Home() {
     ) {
       const checkStatusInterval = setInterval(() => {
         createAccount(address!, sessionId || "", chainId || 1).then((data) => {
-          console.log(data.status);
           if (data.status === "done" || data.status === "error") {
             clearInterval(checkStatusInterval);
           }
@@ -131,7 +126,7 @@ export default function Home() {
         />
         <RecentTransactions
           isMobile={isTablet}
-          className="min-w-[360px] h-fit w-full cols-span-1 min-[1160px]:col-span-2 row-span-2"
+          className="min-w-[320px] h-fit w-full cols-span-1 min-[1160px]:col-span-2 row-span-2"
         />
         <BankSettings className="min-w-[320px] min-[1160px]:max-w-[480px]" />
         {!isTablet && <Banner className="min-[1160px]:h-full" />}

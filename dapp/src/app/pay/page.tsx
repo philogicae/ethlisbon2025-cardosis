@@ -12,7 +12,7 @@ const Pay = () => {
   const { isLoading, isError } = useMockPay(address, chainId);
 
   return (
-    <div className="my-8 mx-4">
+    <div className="mx-4 my-8">
       <ConnectKitButton />
       <h1 className="mb-4 text-2xl font-bold">Pay with Gnosis card:</h1>
       <div
