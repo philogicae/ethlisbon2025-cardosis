@@ -98,9 +98,12 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
           }
           return res.data;
         })
-        .catch((error) => {
+        .catch(() => {
           setSessionId(null);
           setIsAuthenticated(false);
+          localStorage.removeItem(SIWE_SESSION_ID);
+          localStorage.removeItem(SIWE_ADDRESS);
+          localStorage.removeItem(SIWE_CHAIN_ID);
           return null;
         });
     },
@@ -109,6 +112,10 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
         // Reset all auth-related state
         setSessionId(null);
         setIsAuthenticated(false);
+        // TODO: implement functions to remove and add to localStorage
+        localStorage.removeItem(SIWE_SESSION_ID);
+        localStorage.removeItem(SIWE_ADDRESS);
+        localStorage.removeItem(SIWE_CHAIN_ID);
         return res.data.ok;
       });
     },
