@@ -6,7 +6,10 @@
  **/
 
 import { cn } from "@/lib/utils";
-import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
+import {
+  IconLayoutNavbarCollapse,
+  IconLayoutNavbarExpand,
+} from "@tabler/icons-react";
 import {
   AnimatePresence,
   MotionValue,
@@ -43,13 +46,14 @@ const FloatingDockMobile = ({
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
+  const Icon = open ? IconLayoutNavbarExpand : IconLayoutNavbarCollapse;
   return (
-    <nav className={cn("block relative md:hidden", className)}>
+    <nav className={cn("block relative sm:hidden", className)}>
       <AnimatePresence>
         {open && (
           <motion.div
             layoutId="nav"
-            className="flex absolute inset-x-0 bottom-full flex-col gap-2 mb-2"
+            className="flex absolute inset-x-0 bottom-full flex-col gap-2 mb-2 top-[45px]"
           >
             {items.map((item, idx) => (
               <motion.div
@@ -82,9 +86,9 @@ const FloatingDockMobile = ({
       </AnimatePresence>
       <button
         onClick={() => setOpen(!open)}
-        className="flex justify-center items-center w-10 h-10 bg-gray-50 rounded-full dark:bg-neutral-800"
+        className="flex justify-center items-center w-10 h-10 rounded-full bg-card"
       >
-        <IconLayoutNavbarCollapse className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
+        <Icon className="w-5 h-5 text-foreground dark:text-neutral-400" />
       </button>
     </nav>
   );
@@ -103,7 +107,7 @@ const FloatingDockDesktop = ({
       onMouseMove={(e) => mouseY.set(e.clientY)}
       onMouseLeave={() => mouseY.set(Infinity)}
       className={cn(
-        "hidden flex-col gap-4 items-end py-4 pr-3 mx-auto w-16 rounded-2xl border h-fit bg-card md:flex dark:bg-neutral-900",
+        "hidden flex-col gap-4 items-end py-4 pr-3 mx-auto w-16 rounded-2xl border h-fit bg-card sm:flex dark:bg-neutral-900",
         className
       )}
     >
