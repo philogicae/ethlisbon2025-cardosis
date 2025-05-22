@@ -131,7 +131,7 @@ export default function Home() {
         />
         <RecentTransactions
           isMobile={isTablet}
-          className="min-w-[360px] h-fit w-full cols-span-1 min-[1160px]:col-span-2 row-span-2"
+          className="min-w-[320px] h-fit w-full cols-span-1 min-[1160px]:col-span-2 row-span-2"
         />
         <BankSettings className="min-w-[320px] min-[1160px]:max-w-[480px]" />
         {!isTablet && <Banner className="min-[1160px]:h-full" />}
