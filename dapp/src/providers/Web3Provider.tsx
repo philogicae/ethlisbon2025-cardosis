@@ -13,6 +13,11 @@ import { baseApi } from "@/constants/api";
 import axios from "axios";
 import { useEffect } from "react";
 import { useAppStore } from "@/stores/useAppStore";
+import {
+  SIWE_ADDRESS,
+  SIWE_CHAIN_ID,
+  SIWE_SESSION_ID,
+} from "@/constants/storage";
 
 const config = createConfig(
   getDefaultConfig({
@@ -35,15 +40,10 @@ const queryClient = new QueryClient();
 
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   // Use Zustand store instead of local state
-  const { sessionId, setSessionId, setIsAuthenticated, isAuthenticated } =
-    useAppStore();
-  console.log("isAuthenticated", isAuthenticated);
-  // useEffect(() => {
-  //   const id = getSessionId();
-  //   if (id) {
-  //     setSessionId(id);
-  //   }
-  // }, [getSessionId, setSessionId]);
+  const { sessionId, setSessionId, setIsAuthenticated } = useAppStore();
+  const sessionIdFromStorage = localStorage.getItem(SIWE_SESSION_ID);
+  const addressFromStorage = localStorage.getItem(SIWE_ADDRESS);
+  const chainIdFromStorage = localStorage.getItem(SIWE_CHAIN_ID);
 
   const siweConfig: SIWEConfig = {
     getNonce: async () =>
@@ -74,18 +74,28 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
           }
         )
         .then((res) => {
-          setSessionId(res.data.sessionId);
-          console.log("VEIRD:", res.data);
-          setIsAuthenticated(true);
+          const { sessionId, address, chainId } = res.data;
+          if (sessionId) {
+            setIsAuthenticated(true);
+            setSessionId(sessionId);
+            localStorage.setItem(SIWE_SESSION_ID, sessionId);
+            localStorage.setItem(SIWE_ADDRESS, address);
+            localStorage.setItem(SIWE_CHAIN_ID, chainId);
+          }
           return res.data.ok;
         }),
     getSession: async () => {
       return axios
-        .post(`${baseApi}/siwe/session`, { sessionId })
+        .post(`${baseApi}/siwe/session`, { sessionId: sessionIdFromStorage })
         .then((res) => {
-          setSessionId(res.data.sessionId);
-          console.log(res.data);
-          setIsAuthenticated(true);
+          const { sessionId, address, chainId } = res.data;
+          if (sessionId) {
+            setIsAuthenticated(true);
+            setSessionId(sessionId);
+            localStorage.setItem(SIWE_SESSION_ID, sessionId);
+            localStorage.setItem(SIWE_ADDRESS, address);
+            localStorage.setItem(SIWE_CHAIN_ID, chainId);
+          }
           return res.data;
         })
         .catch((error) => {
