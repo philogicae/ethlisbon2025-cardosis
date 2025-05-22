@@ -44,12 +44,12 @@ const FloatingDockMobile = ({
 }) => {
   const [open, setOpen] = useState(false);
   return (
-    <nav className={cn("relative block md:hidden", className)}>
+    <nav className={cn("block relative md:hidden", className)}>
       <AnimatePresence>
         {open && (
           <motion.div
             layoutId="nav"
-            className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2"
+            className="flex absolute inset-x-0 bottom-full flex-col gap-2 mb-2"
           >
             {items.map((item, idx) => (
               <motion.div
@@ -71,9 +71,9 @@ const FloatingDockMobile = ({
                 <a
                   href={item.href}
                   key={item.title}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
+                  className="flex justify-center items-center w-10 h-10 bg-gray-50 rounded-full dark:bg-neutral-900"
                 >
-                  <div className="h-4 w-4">{item.icon}</div>
+                  <div className="w-4 h-4">{item.icon}</div>
                 </a>
               </motion.div>
             ))}
@@ -82,9 +82,9 @@ const FloatingDockMobile = ({
       </AnimatePresence>
       <button
         onClick={() => setOpen(!open)}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-800"
+        className="flex justify-center items-center w-10 h-10 bg-gray-50 rounded-full dark:bg-neutral-800"
       >
-        <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
+        <IconLayoutNavbarCollapse className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
       </button>
     </nav>
   );
@@ -100,10 +100,10 @@ const FloatingDockDesktop = ({
   const mouseY = useMotionValue(Infinity);
   return (
     <motion.div
-      onMouseMove={(e) => mouseY.set(e.pageY)}
+      onMouseMove={(e) => mouseY.set(e.clientY)}
       onMouseLeave={() => mouseY.set(Infinity)}
       className={cn(
-        "mx-auto hidden w-16 h-fit items-end gap-4 rounded-2xl bg-card border py-4 pr-3 md:flex dark:bg-neutral-900 flex-col",
+        "hidden flex-col gap-4 items-end py-4 pr-3 mx-auto w-16 rounded-2xl border h-fit bg-card md:flex dark:bg-neutral-900",
         className
       )}
     >
@@ -194,7 +194,7 @@ function IconContainer({
         </AnimatePresence>
         <motion.div
           style={{ width: widthIcon, height: heightIcon }}
-          className="flex items-center justify-center"
+          className="flex justify-center items-center"
         >
           {icon}
         </motion.div>

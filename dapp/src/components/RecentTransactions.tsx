@@ -19,6 +19,7 @@ import {
   MoveRight,
   PiggyBank,
 } from "lucide-react";
+import { useAppStore } from "@/stores/useAppStore";
 
 const mockTransactions = [
   {
@@ -111,13 +112,13 @@ export function RecentTransactions({
   className?: string;
   isMobile: boolean;
 }) {
-  const { address, chainId } = useAccount();
+  const { isAuthenticated } = useAppStore();
   const {
     isLoading: isLoadingTransactions,
     data: transactions,
     isError,
-  } = useGetTransactionsList(address, chainId);
-  const isLoading = isLoadingTransactions || !address || isError;
+  } = useGetTransactionsList();
+  const isLoading = isLoadingTransactions || isError || !isAuthenticated;
 
   return (
     <Card className={cn(className)}>
@@ -126,7 +127,7 @@ export function RecentTransactions({
         <CardDescription>
           You&apos;ve made{" "}
           {isLoading ? (
-            <span className="animate-pulse blur-md select-none">10</span>
+            <span className="blur-md animate-pulse select-none">10</span>
           ) : (
             transactions?.length
           )}{" "}
@@ -146,7 +147,7 @@ export function RecentTransactions({
                   "flex items-center justify-between"
                 )}
               >
-                <div className="flex items-center gap-4">
+                <div className="flex gap-4 items-center">
                   <div
                     className={cn(
                       isLoading && "animate-pulse blur-md select-none",
@@ -166,7 +167,7 @@ export function RecentTransactions({
                     </p>
                     <time
                       dateTime={transaction.timestamp.toString()}
-                      className="text-muted-foreground text-sm"
+                      className="text-sm text-muted-foreground"
                     >
                       {humanReadableDate(transaction.timestamp)}
                     </time>

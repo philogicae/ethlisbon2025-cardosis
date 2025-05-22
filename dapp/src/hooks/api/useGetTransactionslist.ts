@@ -1,7 +1,7 @@
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
-import { SIWE_SESSION_ID } from "@/constants/storage";
 import apiClient from "@/lib/api";
+import { useAppStore } from "@/stores/useAppStore";
 
 export type Transaction = {
   details: {
@@ -17,23 +17,19 @@ export type Transaction = {
   type: "withdraw" | "transfer" | 'spend' | 'deposit' | 'saving';
 };
 
-const fetchTransactionsList = async (
-  addr?: string,
-  chainId?: number
-): Promise<Transaction[]> => {
-  if (!addr || !chainId) return [];
-  const sessionId = localStorage.getItem(SIWE_SESSION_ID);
+const fetchTransactionsList = async (): Promise<Transaction[]> => {
   const response = await apiClient
-    .post(`${baseApi}/account/transactions`, { address: addr, sessionId, chainId })
+    .post(`${baseApi}/account/transactions`)
     .then((res) => res.data);
   return response.transactions;
 };
 
-const useGetTransactionsList = (addr?: string, chainId?: number) => {
+const useGetTransactionsList = () => {
+  const { sessionId } = useAppStore();
   return useQuery({
-    queryKey: ["transactions", addr, chainId],
-    queryFn: () => fetchTransactionsList(addr, chainId),
-    enabled: !!addr && !!chainId,
+    queryKey: ["transactions", sessionId],
+    queryFn: () => fetchTransactionsList(),
+    enabled: !!sessionId,
     refetchOnWindowFocus: false,  // Don't refetch when window focuses
   });
 };

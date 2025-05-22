@@ -56,7 +56,6 @@ export function Chart({ className }: { className?: string }) {
   const { address, chainId } = useAccount();
 
   const { data: charts, isLoading, isError } = useGetCharts();
-  console.log("should be loading", !isAuthenticated);
   const isLoadingCharts = isLoading || !isAuthenticated || isError;
   // State to store the maximum value found in chart data
   const [maxValue, setMaxValue] = useState<number>(0);
