@@ -1,18 +1,18 @@
-import axios from "axios";
 import { baseApi } from "@/constants/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { SIWE_SESSION_ID } from "@/constants/storage";
+import apiClient from "@/lib/api";
+// import { SIWE_SESSION_ID } from "@/constants/storage";
 
 const mockPay = async (
   addr?: string,
   chainId?: number
 ): Promise<{ status?: string }> => {
   if (!addr || !chainId) return {};
-  const sessionId = localStorage.getItem(SIWE_SESSION_ID);
-  const response = await axios
+  // const sessionId = localStorage.getItem(SIWE_SESSION_ID);
+  const response = await apiClient
     .post(`${baseApi}/mock/spend`, {
       address: addr,
-      sessionId,
+      // sessionId,
       chainId,
       amount: 1,
     })

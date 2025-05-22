@@ -75,7 +75,6 @@ export default function Home() {
     ) {
       const checkStatusInterval = setInterval(() => {
         createAccount(address!, sessionId || "", chainId || 1).then((data) => {
-          console.log(data.status);
           if (data.status === "done" || data.status === "error") {
             clearInterval(checkStatusInterval);
           }
