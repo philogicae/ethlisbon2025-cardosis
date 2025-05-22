@@ -19,6 +19,7 @@ import {
   MoveRight,
   PiggyBank,
 } from "lucide-react";
+import { useAppStore } from "@/stores/useAppStore";
 
 const mockTransactions = [
   {
@@ -111,13 +112,13 @@ export function RecentTransactions({
   className?: string;
   isMobile: boolean;
 }) {
-  const { address, chainId } = useAccount();
+  const { isAuthenticated } = useAppStore();
   const {
     isLoading: isLoadingTransactions,
     data: transactions,
     isError,
   } = useGetTransactionsList();
-  const isLoading = isLoadingTransactions || !address || isError;
+  const isLoading = isLoadingTransactions || isError || !isAuthenticated;
 
   return (
     <Card className={cn(className)}>
