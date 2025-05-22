@@ -1,6 +1,7 @@
 import axios from "axios";
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
+import apiClient from "@/lib/api";
 
 // export type Token = {
 //   attributes: {
@@ -24,7 +25,7 @@ const checkAccount = async (
   status: string;
   safes: { card: string; dca: string; reserve: string };
 }> => {
-  const response = await axios
+  const response = await apiClient
     .post(`${baseApi}/account`, { address: addr, sessionId, chainId })
     .then((res) => res.data);
 
@@ -36,7 +37,7 @@ const createAccount = async (
   sessionId?: string,
   chainId?: number
 ): Promise<{ status: string }> => {
-  const response = await axios
+  const response = await apiClient
     .post(`${baseApi}/account/create`, { address: addr, sessionId, chainId })
     .then((res) => res.data);
 

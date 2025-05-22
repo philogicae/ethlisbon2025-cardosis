@@ -9,20 +9,19 @@ export type Balance = {
   reserve: number | null;
 };
 
-const fetchBalances = async (addr?: string, sessionId?: string, chainId?: number): Promise<Balance> => {
-  if (!addr || !sessionId || !chainId) return {card: null, dca_current: null, dca_total: null, reserve: null};
+const fetchBalances = async (): Promise<Balance> => {
   const response = await apiClient
-    .post(`${baseApi}/account/balances`, { address: addr, sessionId, chainId })
+    .post(`${baseApi}/account/balances`)
     .then((res) => res.data);
 
   return response.balances;
 };
 
-const useGetBalances = (searchValue?: string, sessionId?: string , chainId?: number) => {
+const useGetBalances = () => {
   return useQuery({
-    queryKey: ["balances", searchValue],
-    queryFn: () => fetchBalances(searchValue, sessionId, chainId),
-    enabled: !!searchValue && !!sessionId && !!chainId,
+    queryKey: ["balances"],
+    queryFn: () => fetchBalances(),
+    refetchOnWindowFocus: false,
   });
 };
 

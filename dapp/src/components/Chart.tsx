@@ -52,10 +52,10 @@ const loadingData = [
 ];
 
 export function Chart({ className }: { className?: string }) {
+  const { isAuthenticated, sessionId } = useAppStore();
   const { address, chainId } = useAccount();
-  const { isAuthenticated } = useAppStore();
 
-  const { data: charts, isLoading, isError } = useGetCharts(address, chainId);
+  const { data: charts, isLoading, isError } = useGetCharts();
   console.log("should be loading", !isAuthenticated);
   const isLoadingCharts = isLoading || !isAuthenticated || isError;
   // State to store the maximum value found in chart data
@@ -167,7 +167,7 @@ export function Chart({ className }: { className?: string }) {
               fill="url(#fillReserve)"
               fillOpacity={0.4}
               stroke="var(--color-reserve)"
-              stackId="a"
+              stackId="b"
               strokeWidth={4}
             />
             <Area
@@ -176,7 +176,7 @@ export function Chart({ className }: { className?: string }) {
               fill="url(#fillDca)"
               fillOpacity={0.4}
               stroke="var(--color-dca)"
-              stackId="a"
+              stackId="c"
               strokeWidth={4}
             />
           </AreaChart>

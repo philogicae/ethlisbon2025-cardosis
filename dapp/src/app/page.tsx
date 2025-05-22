@@ -50,11 +50,11 @@ export default function Home() {
 
   const [sessionId, setSessionId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setSessionId(localStorage.getItem(SIWE_SESSION_ID));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     setSessionId(localStorage.getItem(SIWE_SESSION_ID));
+  //   }
+  // }, []);
   const {
     isLoading,
     data: balances,
@@ -64,7 +64,7 @@ export default function Home() {
   const { data: accountPrepared } = usePrepareAccount(
     address,
     sessionId || "",
-    chainId
+    Number(chainId)
   );
   const isLoadingBalances = !address || isLoading || isError;
 
@@ -99,7 +99,7 @@ export default function Home() {
   ]);
 
   return (
-    <div className="px-4 py-6 w-full flex flex-col gap-4">
+    <div className="flex flex-col gap-4 px-4 py-6 w-full">
       <div className="flex justify-start h-[40px]">
         <ConnectKitButton
           customTheme={{
@@ -109,14 +109,14 @@ export default function Home() {
       </div>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(340px,1fr))] gap-4">
         <NumberBlock
-          className="h-fit row-span-1"
+          className="row-span-1 h-fit"
           description="Card account balance"
           value={balances?.card || 0}
           isLoading={isLoadingBalances}
           address={accountPrepared?.safes?.card}
         />
         <NumberBlock
-          className="h-fit row-span-1"
+          className="row-span-1 h-fit"
           description="DCA account balance"
           value={balances?.dca_current || 0}
           isLoading={isLoadingBalances}
@@ -138,16 +138,17 @@ export default function Home() {
       </div>
       <div className={cn("grid grid-cols-3 gap-4", isTablet && "grid-cols-2")}>
         <div className="flex flex-col col-span-2 gap-4">
-          <Chart className="w-full col-span-2 row-span-1" />
+          <Chart className="col-span-2 row-span-1 w-full" />
           <WithdrawBox className="col-start-1 row-start-2 w-full" />
         </div>
 
-        <div className="col-span-1 flex flex-col gap-4">
+        <div className="flex flex-col col-span-1 gap-4">
           {isTablet && <Banner className="min-[1160px]:h-full" />}
           <CarouselTokens className="h-[unset]" />
-          <SavingsGoal className="h-fit w-full col-start-3" />
+          <SavingsGoal className="col-start-3 w-full h-fit" />
         </div>
       </div>
+
       {/* <Dialog open>
         <DialogContent>
           <DialogHeader>

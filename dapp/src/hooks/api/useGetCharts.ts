@@ -1,6 +1,5 @@
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
-import { SIWE_SESSION_ID } from "@/constants/storage";
 import apiClient from "@/lib/api";
 
 export type ChartStamp = {
@@ -10,20 +9,17 @@ export type ChartStamp = {
   reserve: number;
 };
 
-const fetchCharts = async (addr: string | undefined, chainId?: number): Promise<ChartStamp[]> => {
-  if (!addr || !chainId) return [];
-  const sessionId = localStorage.getItem(SIWE_SESSION_ID);
+const fetchCharts = async (): Promise<ChartStamp[]> => {
   const response = await apiClient
-    .post(`${baseApi}/account/charts`, { address: addr, sessionId, chainId })
+    .post(`${baseApi}/account/charts`)
     .then((res) => res.data);
   return response.charts; 
 };
 
-const useGetCharts = (addr: string | undefined, chainId?: number) => {
+const useGetCharts = () => {
   return useQuery({
-    queryKey: ["charts", addr, chainId],
-    queryFn: () => fetchCharts(addr, chainId),
-    enabled: !!addr && !!chainId,
+    queryKey: ["charts"],
+    queryFn: () => fetchCharts(),
     refetchOnWindowFocus: false,  // Don't refetch when window focuses
   });
 };
