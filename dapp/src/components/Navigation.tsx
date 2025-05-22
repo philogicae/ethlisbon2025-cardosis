@@ -25,7 +25,7 @@ const items = [
   },
   {
     title: "Transactions",
-    href: "#",
+    href: "/transactions",
     icon: <Wallet />,
   },
   {
@@ -48,9 +48,9 @@ const Navigation = ({ className }: { className?: string }) => {
   //           "linear-gradient(351deg,rgba(39, 46, 27, 1) 0%, rgba(57, 71, 36, 1) 48%, rgba(67, 83, 40, 1) 100%)",
   //       }}
   //     >
-  //       <SidebarHeader className="items-center py-8 px-2 gap-1">
+  //       <SidebarHeader className="gap-1 items-center px-2 py-8">
   //         <PiggyBank size={44} />
-  //         <h1 className="font-bold text-2xl">CARDOSIS</h1>
+  //         <h1 className="text-2xl font-bold">CARDOSIS</h1>
   //       </SidebarHeader>
   //       <SidebarContent>
   //         <SidebarGroup>
