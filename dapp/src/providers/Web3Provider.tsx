@@ -12,11 +12,6 @@ import { SiweMessage } from "siwe";
 import { baseApi } from "@/constants/api";
 import axios from "axios";
 import { useAppStore } from "@/stores/useAppStore";
-import {
-  SIWE_ADDRESS,
-  SIWE_CHAIN_ID,
-  SIWE_SESSION_ID,
-} from "@/constants/storage";
 
 const config = createConfig(
   getDefaultConfig({
@@ -39,9 +34,13 @@ const queryClient = new QueryClient();
 
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   // Use Zustand store instead of local state
-  const { sessionId, setSessionId, setIsAuthenticated } = useAppStore();
-  // TODO: check if this is needed
-  const sessionIdFromStorage = localStorage.getItem(SIWE_SESSION_ID);
+  const {
+    sessionId,
+    setSessionId,
+    setIsAuthenticated,
+    setAddress,
+    setChainId,
+  } = useAppStore();
 
   const siweConfig: SIWEConfig = {
     getNonce: async () =>
@@ -76,32 +75,30 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
           if (sessionId) {
             setIsAuthenticated(true);
             setSessionId(sessionId);
-            localStorage.setItem(SIWE_SESSION_ID, sessionId);
-            localStorage.setItem(SIWE_ADDRESS, address);
-            localStorage.setItem(SIWE_CHAIN_ID, chainId);
+            setAddress(address);
+            setChainId(chainId);
           }
           return res.data.ok;
         }),
     getSession: async () => {
       return axios
-        .post(`${baseApi}/siwe/session`, { sessionId: sessionIdFromStorage })
+        .post(`${baseApi}/siwe/session`, { sessionId })
         .then((res) => {
           const { sessionId, address, chainId } = res.data;
           if (sessionId) {
             setIsAuthenticated(true);
             setSessionId(sessionId);
-            localStorage.setItem(SIWE_SESSION_ID, sessionId);
-            localStorage.setItem(SIWE_ADDRESS, address);
-            localStorage.setItem(SIWE_CHAIN_ID, chainId);
+            setAddress(address);
+            setChainId(chainId);
           }
           return res.data;
         })
         .catch(() => {
           setSessionId(null);
           setIsAuthenticated(false);
-          localStorage.removeItem(SIWE_SESSION_ID);
-          localStorage.removeItem(SIWE_ADDRESS);
-          localStorage.removeItem(SIWE_CHAIN_ID);
+          setAddress(null);
+          setChainId(null);
+
           return null;
         });
     },
@@ -110,10 +107,9 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
         // Reset all auth-related state
         setSessionId(null);
         setIsAuthenticated(false);
-        // TODO: implement functions to remove and add to localStorage
-        localStorage.removeItem(SIWE_SESSION_ID);
-        localStorage.removeItem(SIWE_ADDRESS);
-        localStorage.removeItem(SIWE_CHAIN_ID);
+        setAddress(null);
+        setChainId(null);
+
         return res.data.ok;
       });
     },
