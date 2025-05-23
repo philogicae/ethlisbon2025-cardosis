@@ -1,4 +1,5 @@
 // src/lib/api.tsx
+"use client";
 import axios, { InternalAxiosRequestConfig } from "axios";
 import { baseApi, geckoApi } from "@/constants/api";
 import {
@@ -6,6 +7,7 @@ import {
   SIWE_CHAIN_ID,
   SIWE_SESSION_ID,
 } from "@/constants/storage";
+import { useAppStore } from "@/stores/useAppStore";
 
 // Declare module augmentation to add our custom properties to Axios types
 declare module "axios" {
@@ -38,6 +40,10 @@ const isPublicEndpoint = (url: string | undefined): boolean => {
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Get URL for checking public endpoints
+    const sessionId = useAppStore.getState().sessionId;
+    const address = useAppStore.getState().address;
+    const chainId = useAppStore.getState().chainId;
+
     const url = config.url || "";
     const fullUrl = config.baseURL ? `${config.baseURL}${url}` : url;
 
@@ -47,9 +53,9 @@ apiClient.interceptors.request.use(
       config.requireAuth !== undefined ? config.requireAuth : !skipAuth;
 
     // Get sessionId from Zustand store
-    const sessionId = localStorage.getItem(SIWE_SESSION_ID);
-    const chainId = Number(localStorage.getItem(SIWE_CHAIN_ID));
-    const address = localStorage.getItem(SIWE_ADDRESS);
+    // const sessionId = localStorage.getItem(SIWE_SESSION_ID);
+    // const chainId = Number(localStorage.getItem(SIWE_CHAIN_ID));
+    // const address = localStorage.getItem(SIWE_ADDRESS);
 
     // If auth is required but we have no session, reject the request
     if (requireAuth && !sessionId && !address && !chainId) {
