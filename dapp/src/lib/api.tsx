@@ -2,11 +2,6 @@
 "use client";
 import axios, { InternalAxiosRequestConfig } from "axios";
 import { baseApi, geckoApi } from "@/constants/api";
-import {
-  SIWE_ADDRESS,
-  SIWE_CHAIN_ID,
-  SIWE_SESSION_ID,
-} from "@/constants/storage";
 import { useAppStore } from "@/stores/useAppStore";
 
 // Declare module augmentation to add our custom properties to Axios types
@@ -52,20 +47,15 @@ apiClient.interceptors.request.use(
     const requireAuth =
       config.requireAuth !== undefined ? config.requireAuth : !skipAuth;
 
-    // Get sessionId from Zustand store
-    // const sessionId = localStorage.getItem(SIWE_SESSION_ID);
-    // const chainId = Number(localStorage.getItem(SIWE_CHAIN_ID));
-    // const address = localStorage.getItem(SIWE_ADDRESS);
-
     // If auth is required but we have no session, reject the request
-    if (requireAuth && !sessionId && !address && !chainId) {
+    if (requireAuth && (!sessionId || !address || !chainId)) {
       return Promise.reject(
         new Error("Authentication required but no session found")
       );
     }
 
     // Add sessionId, address, and chainId to request data if auth is required
-    if (requireAuth && sessionId) {
+    if (requireAuth && sessionId && address && chainId) {
       if (config.data) {
         config.data = {
           ...config.data,
