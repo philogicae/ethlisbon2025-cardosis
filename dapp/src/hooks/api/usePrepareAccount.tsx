@@ -16,42 +16,30 @@ import apiClient from "@/lib/api";
 //   id: number;
 // };
 
-const checkAccount = async (
-  addr?: string,
-  sessionId?: string,
-  chainId?: number
-): Promise<{
+const checkAccount = async (): Promise<{
   status: string;
   safes: { card: string; dca: string; reserve: string };
 }> => {
   const response = await apiClient
-    .post(`${baseApi}/account`, { address: addr, sessionId, chainId })
+    .post(`${baseApi}/account`)
     .then((res) => res.data);
 
   return response;
 };
 
-const createAccount = async (
-  addr?: string,
-  sessionId?: string,
-  chainId?: number
-): Promise<{ status: string }> => {
+const createAccount = async (): Promise<{ status: string }> => {
   const response = await apiClient
-    .post(`${baseApi}/account/create`, { address: addr, sessionId, chainId })
+    .post(`${baseApi}/account/create`)
     .then((res) => res.data);
 
   return response.data.status;
 };
 
-const usePrepareAccount = (
-  addr?: string,
-  sessionId?: string,
-  chainId?: number
-) => {
+const usePrepareAccount = () => {
   return useQuery({
-    queryKey: ["prepare-account", addr],
-    queryFn: () => checkAccount(addr, sessionId, chainId),
-    enabled: !!addr,
+    queryKey: ["prepare-account"],
+    queryFn: () => checkAccount(),
+    enabled: true,
   });
 };
 
