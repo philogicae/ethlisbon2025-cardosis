@@ -84,13 +84,10 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
       return axios
         .post(`${baseApi}/siwe/session`, { sessionId })
         .then((res) => {
-          const { sessionId, address, chainId } = res.data;
-          if (sessionId) {
-            setIsAuthenticated(true);
-            setSessionId(sessionId);
-            setAddress(address);
-            setChainId(chainId);
-          }
+          const { address, chainId } = res.data;
+          setIsAuthenticated(true);
+          setAddress(address);
+          setChainId(chainId);
           return res.data;
         })
         .catch(() => {
