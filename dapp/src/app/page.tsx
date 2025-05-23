@@ -27,6 +27,7 @@ import {
   createAccount,
   usePrepareAccount,
 } from "@/hooks/api/usePrepareAccount";
+import { useAppStore } from "@/stores/useAppStore";
 
 /**
  *
@@ -42,39 +43,27 @@ import {
  */
 
 export default function Home() {
-  const { isConnected, address, chainId } = useAccount();
+  const { isConnected } = useAccount();
+  const { sessionId, address, chainId } = useAppStore();
 
   const isTablet = useIsMobile(1160);
   // const isMobile = useIsMobile(890);
 
-  // TODO: check fetches
-  const [sessionId] = useState<string | null>(null);
-
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     setSessionId(localStorage.getItem(SIWE_SESSION_ID));
-  //   }
-  // }, []);
   const { isLoading, data: balances, isError } = useGetBalances();
 
-  const { data: accountPrepared } = usePrepareAccount(
-    address,
-    sessionId || "",
-    Number(chainId)
-  );
+  const { data: accountPrepared } = usePrepareAccount();
   const isLoadingBalances = !address || isLoading || isError;
 
   const [creationProgress, setCreationProgress] = useState("");
 
   useEffect(() => {
-    console.log("accountPrepared", address, accountPrepared);
     if (!address) return;
     if (
       accountPrepared?.status === "not_found" ||
       accountPrepared?.status === "creating"
     ) {
       const checkStatusInterval = setInterval(() => {
-        createAccount(address!, sessionId || "", chainId || 1).then((data) => {
+        createAccount(/* TODO Check registartion later */).then((data) => {
           if (data.status === "done" || data.status === "error") {
             clearInterval(checkStatusInterval);
           }
