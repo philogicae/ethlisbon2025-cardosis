@@ -38,7 +38,9 @@ import { useAppStore } from "@/stores/useAppStore";
  * 6. implement hovers
  * 7. landing
  * 8. fake shop
- * 9. ai
+ * 9. layout and connect button
+ * 10. mobile
+ * 11. onboarding
  *
  */
 
