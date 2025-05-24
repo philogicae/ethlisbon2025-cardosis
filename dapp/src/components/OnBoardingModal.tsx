@@ -20,7 +20,7 @@ const statuses = [
   { text: "We’re all set!", progress: 100, duration: 2000 },
 ];
 
-const OnBoardingModal = () => {
+const OnBoardingModal = ({ open }: { open: boolean }) => {
   const [statusIndex, setStatusIndex] = useState(0);
   const status = statuses[statusIndex];
 
@@ -35,7 +35,7 @@ const OnBoardingModal = () => {
   const isDone = statusIndex === statuses.length - 1;
 
   return (
-    <Dialog open>
+    <Dialog open={open}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Hold on, we are preparing everything</DialogTitle>
