@@ -14,21 +14,13 @@ import { useEffect, useState } from "react";
 import { useGetBalances } from "@/hooks/api/useGetBalances";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogDescription,
-//   DialogHeader,
-//   DialogTitle,
-// } from "@/components/ui/dialog";
-// import { Progress } from "@/components/ui/progress";
-// import { ContainerTextFlip } from "@/components/ui/animations/TextFlip";
 import {
   createAccount,
   usePrepareAccount,
 } from "@/hooks/api/usePrepareAccount";
 import { useAppStore } from "@/stores/useAppStore";
 import Navigation from "@/components/Navigation";
+import OnBoardingModal from "@/components/OnBoardingModal";
 
 /**
  *
@@ -135,26 +127,7 @@ export default function Home() {
           <SavingsGoal className="col-start-3 w-full h-fit" />
         </div>
       </div>
-
-      {/* <Dialog open>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Hold on, we are preparing everything</DialogTitle>
-            <DialogDescription>
-              This action cannot be skipped.
-            </DialogDescription>
-          </DialogHeader>
-          <ContainerTextFlip
-            words={[
-              "Preparing...",
-              "Creating safe account...",
-              "Creating AAVE",
-            ]}
-            className="text-card-foreground"
-          />
-          <Progress value={50} />
-        </DialogContent>
-      </Dialog> */}
+      <OnBoardingModal />
     </div>
   );
 }
