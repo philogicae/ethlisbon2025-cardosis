@@ -28,6 +28,7 @@ import {
   usePrepareAccount,
 } from "@/hooks/api/usePrepareAccount";
 import { useAppStore } from "@/stores/useAppStore";
+import Navigation from "@/components/Navigation";
 
 /**
  *
@@ -38,7 +39,6 @@ import { useAppStore } from "@/stores/useAppStore";
  * 6. implement hovers
  * 7. landing
  * 8. fake shop
- * 9. layout and connect button
  * 10. mobile
  * 11. onboarding
  *
@@ -86,7 +86,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-4 px-4 py-6 w-full">
-      <div className="flex justify-start h-[40px]">
+      <div className="flex justify-start h-[40px] gap-4">
+        <Navigation className="sm:hidden" />
         <ConnectKitButton
           customTheme={{
             "--ck-connectbutton-border-radius": "14px",
