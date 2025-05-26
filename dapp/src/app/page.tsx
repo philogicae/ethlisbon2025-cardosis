@@ -14,20 +14,13 @@ import { useEffect, useState } from "react";
 import { useGetBalances } from "@/hooks/api/useGetBalances";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogDescription,
-//   DialogHeader,
-//   DialogTitle,
-// } from "@/components/ui/dialog";
-// import { Progress } from "@/components/ui/progress";
-// import { ContainerTextFlip } from "@/components/ui/animations/TextFlip";
 import {
   createAccount,
   usePrepareAccount,
 } from "@/hooks/api/usePrepareAccount";
 import { useAppStore } from "@/stores/useAppStore";
+import Navigation from "@/components/Navigation";
+import OnBoardingModal from "@/components/OnBoardingModal";
 
 /**
  *
@@ -38,7 +31,8 @@ import { useAppStore } from "@/stores/useAppStore";
  * 6. implement hovers
  * 7. landing
  * 8. fake shop
- * 9. ai
+ * 10. mobile
+ * 11. onboarding
  *
  */
 
@@ -58,12 +52,17 @@ export default function Home() {
 
   useEffect(() => {
     if (!address) return;
+    if (accountPrepared?.status === "created") {
+      useAppStore.setState({ isCreated: true });
+    }
     if (
       accountPrepared?.status === "not_found" ||
       accountPrepared?.status === "creating"
     ) {
+      console.log("Creating account");
       const checkStatusInterval = setInterval(() => {
         createAccount(/* TODO Check registartion later */).then((data) => {
+          console.log("Account creation status:", data);
           if (data.status === "done" || data.status === "error") {
             clearInterval(checkStatusInterval);
           }
@@ -84,7 +83,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-4 px-4 py-6 w-full">
-      <div className="flex justify-start h-[40px]">
+      <div className="flex justify-start h-[40px] gap-4">
+        <Navigation className="sm:hidden" />
         <ConnectKitButton
           customTheme={{
             "--ck-connectbutton-border-radius": "14px",
@@ -132,26 +132,7 @@ export default function Home() {
           <SavingsGoal className="col-start-3 w-full h-fit" />
         </div>
       </div>
-
-      {/* <Dialog open>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Hold on, we are preparing everything</DialogTitle>
-            <DialogDescription>
-              This action cannot be skipped.
-            </DialogDescription>
-          </DialogHeader>
-          <ContainerTextFlip
-            words={[
-              "Preparing...",
-              "Creating safe account...",
-              "Creating AAVE",
-            ]}
-            className="text-card-foreground"
-          />
-          <Progress value={50} />
-        </DialogContent>
-      </Dialog> */}
+      <OnBoardingModal />
     </div>
   );
 }

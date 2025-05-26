@@ -1,6 +1,7 @@
 import { baseApi } from "@/constants/api";
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/lib/api";
+import { useAppStore } from "@/stores/useAppStore";
 
 export type Balance = {
   card: number | null;
@@ -18,9 +19,11 @@ const fetchBalances = async (): Promise<Balance> => {
 };
 
 const useGetBalances = () => {
+  const { sessionId } = useAppStore();
   return useQuery({
-    queryKey: ["balances"],
+    queryKey: ["balances", sessionId],
     queryFn: () => fetchBalances(),
+    enabled: !!sessionId,
     refetchOnWindowFocus: false,
   });
 };

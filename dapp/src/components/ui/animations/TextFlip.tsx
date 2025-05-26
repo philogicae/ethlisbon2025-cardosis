@@ -42,7 +42,7 @@ export function ContainerTextFlip({
   useEffect(() => {
     // Update width whenever the word changes
     updateWidthForWord();
-  }, [currentWordIndex]);
+  }, [currentWordIndex, words]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -60,7 +60,7 @@ export function ContainerTextFlip({
       animate={{ width }}
       transition={{ duration: animationDuration / 2000 }}
       className={cn(
-        "relative inline-block rounded-lg pt-2 pb-3 text-center text-xl font-bold text-black dark:text-white",
+        "inline-block relative pt-2 pb-3 text-xl font-bold text-center text-black rounded-lg dark:text-white",
         "bg-[transparent]",
         className
       )}

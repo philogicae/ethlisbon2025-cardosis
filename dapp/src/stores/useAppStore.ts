@@ -7,7 +7,7 @@ type AppState = {
   address: string | null
   chainId: number | null
   isAuthenticated: boolean
-  
+  isCreated: boolean  
   // UI state
   isDarkMode: boolean
   
@@ -16,6 +16,7 @@ type AppState = {
   setAddress: (address: string | null) => void
   setChainId: (chainId: number | null) => void
   setIsAuthenticated: (isAuthenticated: boolean) => void
+  setIsCreated: (isCreated: boolean) => void
   toggleDarkMode: () => void
   reset: () => void
 }
@@ -27,6 +28,7 @@ export const useAppStore = create<AppState>()(
       address: null,
       chainId: null,
       isAuthenticated: false,
+      isCreated: false,
 
       // UI state
       isDarkMode: false,
@@ -36,12 +38,14 @@ export const useAppStore = create<AppState>()(
       setAddress: (address) => set({ address }),
       setChainId: (chainId) => set({ chainId }),
       setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
+      setIsCreated: (isCreated) => set({ isCreated }),
       toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
       reset: () => set({
         sessionId: null,
         address: null,
         chainId: null,
         isAuthenticated: false,
+        isCreated: false,
       }),
     }),
     {
@@ -50,6 +54,7 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         sessionId: state.sessionId,
         isAuthenticated: state.isAuthenticated,
+        isCreated: state.isCreated,
         isDarkMode: state.isDarkMode,
       }),
     }
