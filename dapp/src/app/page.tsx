@@ -52,12 +52,17 @@ export default function Home() {
 
   useEffect(() => {
     if (!address) return;
+    if (accountPrepared?.status === "created") {
+      useAppStore.setState({ isCreated: true });
+    }
     if (
       accountPrepared?.status === "not_found" ||
       accountPrepared?.status === "creating"
     ) {
+      console.log("Creating account");
       const checkStatusInterval = setInterval(() => {
         createAccount(/* TODO Check registartion later */).then((data) => {
+          console.log("Account creation status:", data);
           if (data.status === "done" || data.status === "error") {
             clearInterval(checkStatusInterval);
           }
