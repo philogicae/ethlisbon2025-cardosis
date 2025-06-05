@@ -40,6 +40,9 @@ export default function Home() {
   const { isConnected } = useAccount();
   const { sessionId, address, chainId } = useAppStore();
 
+  const [showOnBoarding, setShowOnBoarding] = useState(false);
+  const [onBoardingDone, setOnBoardingDone] = useState(false);
+
   const isTablet = useIsMobile(1160);
   // const isMobile = useIsMobile(890);
 
@@ -54,12 +57,13 @@ export default function Home() {
     if (!address) return;
     if (accountPrepared?.status === "created") {
       useAppStore.setState({ isCreated: true });
+      setOnBoardingDone(true);
     }
     if (
       accountPrepared?.status === "not_found" ||
       accountPrepared?.status === "creating"
     ) {
-      console.log("Creating account");
+      setShowOnBoarding(true);
       const checkStatusInterval = setInterval(() => {
         createAccount(/* TODO Check registartion later */).then((data) => {
           console.log("Account creation status:", data);
@@ -124,15 +128,24 @@ export default function Home() {
         <div className="flex flex-col col-span-2 gap-4">
           <Chart className="col-span-2 row-span-1 w-full" />
           <WithdrawBox className="col-start-1 row-start-2 w-full" />
+          {!isTablet && (
+            <div className="flex flex-col flex-wrap col-span-1 gap-4">
+              <Banner className="min-[1160px]:h-full" />
+              <CarouselTokens className="h-[unset]" />
+              <SavingsGoal className="col-start-3 w-full h-fit" />
+            </div>
+          )}
         </div>
 
-        <div className="flex flex-col col-span-1 gap-4">
-          {isTablet && <Banner className="min-[1160px]:h-full" />}
-          <CarouselTokens className="h-[unset]" />
-          <SavingsGoal className="col-start-3 w-full h-fit" />
-        </div>
+        {isTablet && (
+          <div className="flex flex-col flex-wrap col-span-2 gap-4">
+            <Banner className="min-[1160px]:h-full" />
+            <CarouselTokens className="h-[unset]" />
+            <SavingsGoal className="col-start-3 w-full h-fit" />
+          </div>
+        )}
       </div>
-      <OnBoardingModal />
+      <OnBoardingModal open={showOnBoarding} isDone={onBoardingDone} />
     </div>
   );
 }
