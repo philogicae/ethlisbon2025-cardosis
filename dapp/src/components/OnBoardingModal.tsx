@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,26 +13,34 @@ import { Button } from "./ui/button";
 import { BadgeCheck } from "lucide-react";
 
 const statuses = [
-  { text: "Preparing, please wait a few sec...", progress: 10, duration: 2000 },
-  { text: "Creating safe account...", progress: 40, duration: 2500 },
-  { text: "Setting roles...", progress: 65, duration: 1500 },
-  { text: "Creating AAVE...", progress: 80, duration: 2000 },
+  { text: "Preparing, please wait a few sec...", progress: 10, duration: 7500 },
+  { text: "Creating safe account...", progress: 40, duration: 5000 },
+  { text: "Setting roles...", progress: 65, duration: 7500 },
+  { text: "Creating AAVE...", progress: 80, duration: 7500 },
   { text: "We’re all set!", progress: 100, duration: 2000 },
 ];
 
-const OnBoardingModal = ({ open }: { open: boolean }) => {
+const OnBoardingModal = ({
+  open,
+  isDone,
+}: {
+  open: boolean;
+  isDone: boolean;
+}) => {
   const [statusIndex, setStatusIndex] = useState(0);
   const status = statuses[statusIndex];
 
   useEffect(() => {
-    if (statusIndex >= statuses.length - 1) return;
+    if (statusIndex >= statuses.length - 2) return;
+    if (isDone) {
+      setStatusIndex(statuses.length - 1);
+      return;
+    }
     const timeout = setTimeout(() => {
       setStatusIndex((i) => i + 1);
     }, status.duration);
     return () => clearTimeout(timeout);
-  }, [status.duration, statusIndex]);
-
-  const isDone = statusIndex === statuses.length - 1;
+  }, [status.duration, statusIndex, isDone]);
 
   return (
     <Dialog open={open}>
